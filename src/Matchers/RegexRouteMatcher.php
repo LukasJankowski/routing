@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LukasJankowski\Routing\Matchers;
 
+use const ARRAY_FILTER_USE_KEY;
 use LukasJankowski\Routing\Constraints\HostRouteConstraint;
 use LukasJankowski\Routing\Constraints\MethodRouteConstraint;
 use LukasJankowski\Routing\Constraints\RouteConstraintInterface;
@@ -14,10 +15,9 @@ use LukasJankowski\Routing\Request;
 use LukasJankowski\Routing\Route;
 use LukasJankowski\Routing\Router;
 use LukasJankowski\Routing\Utilities\Path;
-use RuntimeException;
 
-use const ARRAY_FILTER_USE_KEY;
 use const PREG_UNMATCHED_AS_NULL;
+use RuntimeException;
 
 final class RegexRouteMatcher implements RouteMatcherInterface
 {
@@ -57,9 +57,10 @@ final class RegexRouteMatcher implements RouteMatcherInterface
     {
         if (! is_subclass_of($constraint, RouteConstraintInterface::class)) {
             throw new RuntimeException(
-                sprintf('Constraint "%s" must implement "%s".',
-                        $constraint,
-                        RouteConstraintInterface::class
+                sprintf(
+                    'Constraint "%s" must implement "%s".',
+                    $constraint,
+                    RouteConstraintInterface::class
                 )
             );
         }
@@ -110,5 +111,4 @@ final class RegexRouteMatcher implements RouteMatcherInterface
             }
         }
     }
-
 }

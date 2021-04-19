@@ -19,8 +19,7 @@ final class RouteCollection extends AbstractRouteCollection
         private ?RouteResourceInterface $resource = null,
         ?RouteCacheInterface $cache = null,
         string $name = 'default'
-    )
-    {
+    ) {
         parent::__construct($matcher, $cache, $name);
 
         if ($this->routes === [] && $this->resource) {
@@ -34,8 +33,7 @@ final class RouteCollection extends AbstractRouteCollection
         ?RouteResourceInterface $resource = null,
         ?RouteCacheInterface $cache = null,
         string $name = 'default'
-    ): self|CompiledRouteCollection
-    {
+    ): self|CompiledRouteCollection {
         $collection = new self($matcher, $parser, $resource, $cache, $name);
 
         if (! empty($collection->getRoutes()) && $collection->getRoutes()[0]->parsedPath !== null) {

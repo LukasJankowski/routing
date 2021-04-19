@@ -43,8 +43,7 @@ final class Route implements Serializable
         array|string $constraints = [],
         array|string $middlewares = [],
         array $defaults = [],
-    )
-    {
+    ) {
         $this->constraint(MethodRouteConstraint::class, (array) Method::normalize($methods));
 
         $this->path = Path::normalize($path);

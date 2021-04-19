@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace LukasJankowski\Routing\Constraints;
 
 use LukasJankowski\Routing\Utilities\Path;
-use LukasJankowski\Routing\Matchers\RouteMatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
-
-use const PHP_INT_MAX;
 
 final class SegmentRouteConstraint extends AbstractRouteConstraint
 {
@@ -19,6 +16,7 @@ final class SegmentRouteConstraint extends AbstractRouteConstraint
 
             if ($value === null || is_array($value)) {
                 $this->route->parsedParameters[$name] = $value;
+
                 continue;
             }
 

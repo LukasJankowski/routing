@@ -15,8 +15,7 @@ final class CompiledRouteCollection extends AbstractRouteCollection
         protected array $routes = [],
         ?RouteCacheInterface $cache = null,
         string $name = 'default'
-    )
-    {
+    ) {
         parent::__construct($matcher, $cache, $name);
     }
 

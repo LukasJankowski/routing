@@ -18,7 +18,7 @@ final class Method
         $methodList = array_map(
             function ($method) {
                 $method = strtoupper($method);
-                if (!in_array($method, Request::METHODS)) {
+                if (! in_array($method, Request::METHODS)) {
                     throw new InvalidArgumentException(
                         sprintf('Method "%s" is not in "%s"::METHODS.', $method, Request::class)
                     );
@@ -31,5 +31,4 @@ final class Method
 
         return is_string($methods) ? $methodList[0] : $methodList;
     }
-
 }

@@ -18,7 +18,7 @@ final class Scheme
         $schemeList = array_map(
             function ($scheme) {
                 $scheme = strtoupper($scheme);
-                if (!in_array($scheme, Request::SCHEMES)) {
+                if (! in_array($scheme, Request::SCHEMES)) {
                     throw new InvalidArgumentException(
                         sprintf('Scheme "%s" is not in "%s"::SCHEMES.', $scheme, Request::class)
                     );

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace LukasJankowski\Routing\Utilities;
 
-use LukasJankowski\Routing\Matchers\RouteMatcherInterface;
-
 use LukasJankowski\Routing\Router;
 
 use const PHP_INT_MAX;

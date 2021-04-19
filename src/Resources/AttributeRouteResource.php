@@ -6,13 +6,13 @@ namespace LukasJankowski\Routing\Resources;
 
 use InvalidArgumentException;
 use LukasJankowski\Routing\Attributes\Route;
+use const PHP_MAJOR_VERSION;
 use ReflectionClass;
 use ReflectionException;
+
 use ReflectionMethod;
 
 use RuntimeException;
-
-use const PHP_MAJOR_VERSION;
 
 final class AttributeRouteResource implements RouteResourceInterface
 {
@@ -55,5 +55,4 @@ final class AttributeRouteResource implements RouteResourceInterface
 
         return $routes;
     }
-
 }

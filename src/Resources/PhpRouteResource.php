@@ -13,14 +13,14 @@ class PhpRouteResource implements RouteResourceInterface
 
     public function __construct(string $file)
     {
-		if (! file_exists($file)) {
-			throw new InvalidArgumentException(sprintf('The file "%s" could not be found.', $file));
-		}
+        if (! file_exists($file)) {
+            throw new InvalidArgumentException(sprintf('The file "%s" could not be found.', $file));
+        }
 
-		$this->file = $file;
-	}
+        $this->file = $file;
+    }
 
-	public function get(): array
+    public function get(): array
     {
         $routes = require $this->file;
 
@@ -31,5 +31,5 @@ class PhpRouteResource implements RouteResourceInterface
         }
 
         return $routes;
-	}
+    }
 }

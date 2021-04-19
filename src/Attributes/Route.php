@@ -6,7 +6,7 @@ namespace LukasJankowski\Routing\Attributes;
 
 use Attribute;
 
-#[Attribute(Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
+#[Attribute(Attribute::TARGET_METHOD|Attribute::IS_REPEATABLE)]
 final class Route
 {
     public function __construct(
@@ -18,8 +18,7 @@ final class Route
         public array|string $constraints = [],
         public array|string $middlewares = [],
         public array $defaults = [],
-    )
-    {
+    ) {
     }
 
     public function make(array $action): \LukasJankowski\Routing\Route

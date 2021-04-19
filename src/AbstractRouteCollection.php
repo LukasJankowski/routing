@@ -17,8 +17,7 @@ abstract class AbstractRouteCollection implements IteratorAggregate, Countable
         protected RouteMatcherInterface $matcher,
         protected ?RouteCacheInterface $cache = null,
         protected string $name = 'default'
-    )
-    {
+    ) {
         if ($this->cache) {
             $this->fromResource($this->cache);
         }
