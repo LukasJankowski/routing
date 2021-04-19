@@ -13,6 +13,9 @@ final class RouteCollection extends AbstractRouteCollection
 {
     protected array $routes = [];
 
+    /**
+     * RouteCollection constructor.
+     */
     public function __construct(
         RouteMatcherInterface $matcher,
         private RouteParserInterface $parser,
@@ -27,6 +30,9 @@ final class RouteCollection extends AbstractRouteCollection
         }
     }
 
+    /**
+     * Make the collection or the compiled version if already parsed.
+     */
     public static function make(
         RouteMatcherInterface $matcher,
         RouteParserInterface $parser,
@@ -39,8 +45,13 @@ final class RouteCollection extends AbstractRouteCollection
         if (! empty($collection->getRoutes()) && $collection->getRoutes()[0]->parsedPath !== null) {
             return new CompiledRouteCollection($matcher, $collection->getRoutes(), $cache, $name);
         }
+
+        return $collection;
     }
 
+    /**
+     * Parse the routes and return a compiled collection.
+     */
     public function parse(): CompiledRouteCollection
     {
         return new CompiledRouteCollection($this->matcher, $this->parser->parse($this->routes), $this->cache);

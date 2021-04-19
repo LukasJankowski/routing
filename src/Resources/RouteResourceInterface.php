@@ -6,5 +6,8 @@ namespace LukasJankowski\Routing\Resources;
 
 interface RouteResourceInterface
 {
+    /**
+     * Get the routes.
+     */
     public function get(): array;
 }

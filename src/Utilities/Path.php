@@ -10,6 +10,9 @@ use const PHP_INT_MAX;
 
 final class Path
 {
+    /**
+     * Normalize the path.
+     */
     public static function normalize(string $path): string
     {
         if ($path === '') {
@@ -19,6 +22,9 @@ final class Path
         return '/' . trim($path, '/#?');
     }
 
+    /**
+     * Split the path by '/'.
+     */
     public static function split(string $path, int $count = PHP_INT_MAX): array
     {
         $segments = explode('/', str_starts_with($path, '/') ? substr($path, 1) : $path, $count);
@@ -26,6 +32,9 @@ final class Path
         return $segments === [''] ? [] : $segments;
     }
 
+    /**
+     * Extract dynamic segments from the path.
+     */
     public static function extractDynamicSegments(string $path): array
     {
         $matches = [];
@@ -45,12 +54,18 @@ final class Path
         return $properties;
     }
 
+    /**
+     * Check if optional segment.
+     */
     public static function isOptionalSegment(string $segment): bool
     {
         // {?var}, {*?var}
         return str_contains(substr($segment, 0, 3), Router::optionalIdentifier());
     }
 
+    /**
+     * Check if wildcard segment.
+     */
     public static function isWildcardSegment(string $segment): bool
     {
         // {*var}, {?*var}

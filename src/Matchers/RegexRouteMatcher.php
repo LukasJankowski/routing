@@ -21,8 +21,12 @@ use RuntimeException;
 
 final class RegexRouteMatcher implements RouteMatcherInterface
 {
+    /** @var array<string,RouteConstraintInterface> */
     private array $constraints;
 
+    /**
+     * RegexRouteMatcher constructor.
+     */
     public function __construct()
     {
         $this->constraints = [
@@ -33,6 +37,9 @@ final class RegexRouteMatcher implements RouteMatcherInterface
         ];
     }
 
+    /**
+     * @inheritDoc
+     */
     public function matches(Route $route, Request $request): bool
     {
         if (! $this->matchPath($route, $request)) {
@@ -44,6 +51,9 @@ final class RegexRouteMatcher implements RouteMatcherInterface
         return true;
     }
 
+    /**
+     * Prepare the constraint.
+     */
     private function getValidator(string $constraint, Route $route, Request $request): RouteConstraintInterface
     {
         $validator = $this->getValidatorFromConstraint($constraint);
@@ -53,6 +63,9 @@ final class RegexRouteMatcher implements RouteMatcherInterface
         return $validator;
     }
 
+    /**
+     * Get the constraint.
+     */
     private function getValidatorFromConstraint(string $constraint): RouteConstraintInterface
     {
         if (! is_subclass_of($constraint, RouteConstraintInterface::class)) {
@@ -68,6 +81,9 @@ final class RegexRouteMatcher implements RouteMatcherInterface
         return $this->constraints[$constraint] ?? new $constraint();
     }
 
+    /**
+     * Match the path.
+     */
     private function matchPath(Route $route, Request $request): bool
     {
         $matches = [];
@@ -86,7 +102,9 @@ final class RegexRouteMatcher implements RouteMatcherInterface
         return true;
     }
 
-
+    /**
+     * Extract dynamic segment information.
+     */
     private function getParameter(Route $route, string $name, ?string $parameter): array
     {
         $segment = [];
@@ -101,6 +119,9 @@ final class RegexRouteMatcher implements RouteMatcherInterface
         ];
     }
 
+    /**
+     * Match constraints.
+     */
     private function matchConstraints(Route $route, Request $request): void
     {
         foreach ($route->getConstraints() as $constraint => $props) {

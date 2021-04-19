@@ -8,6 +8,9 @@ use LukasJankowski\Routing\Resources\FakeRouteResource;
 
 final class FakeRouteCache extends FakeRouteResource implements RouteCacheInterface
 {
+    /**
+     * @inheritDoc
+     */
     public function set(array $routes): void
     {
     }

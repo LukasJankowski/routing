@@ -11,6 +11,9 @@ class PhpRouteResource implements RouteResourceInterface
 {
     private string $file;
 
+    /**
+     * PhpRouteResource constructor.
+     */
     public function __construct(string $file)
     {
         if (! file_exists($file)) {
@@ -20,6 +23,9 @@ class PhpRouteResource implements RouteResourceInterface
         $this->file = $file;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function get(): array
     {
         $routes = require $this->file;

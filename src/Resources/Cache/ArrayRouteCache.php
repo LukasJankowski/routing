@@ -8,6 +8,9 @@ use LukasJankowski\Routing\Resources\ArrayRouteResource;
 
 final class ArrayRouteCache extends ArrayRouteResource implements RouteCacheInterface
 {
+    /**
+     * @inheritDoc
+     */
     public function set(array $routes): void
     {
         $this->routes = $routes;

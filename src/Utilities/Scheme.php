@@ -9,6 +9,9 @@ use LukasJankowski\Routing\Request;
 
 final class Scheme
 {
+    /**
+     * Normalize the scheme.
+     */
     public static function normalize(string|array $schemes): string|array
     {
         if ($schemes === []) {

@@ -9,6 +9,9 @@ use RuntimeException;
 
 final class ApcuRouteCache implements RouteCacheInterface
 {
+    /**
+     * ApcuRouteCache constructor.
+     */
     public function __construct(private string $key)
     {
         if (! extension_loaded('apcu')) {
@@ -16,6 +19,9 @@ final class ApcuRouteCache implements RouteCacheInterface
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function set(array $routes): void
     {
         if (! apcu_store($this->key, $routes)) {
@@ -23,6 +29,9 @@ final class ApcuRouteCache implements RouteCacheInterface
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function get(): array
     {
         $success = false;

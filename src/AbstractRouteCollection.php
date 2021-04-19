@@ -13,6 +13,9 @@ use LukasJankowski\Routing\Resources\RouteResourceInterface;
 
 abstract class AbstractRouteCollection implements IteratorAggregate, Countable
 {
+    /**
+     * AbstractRouteCollection constructor.
+     */
     public function __construct(
         protected RouteMatcherInterface $matcher,
         protected ?RouteCacheInterface $cache = null,
@@ -23,21 +26,33 @@ abstract class AbstractRouteCollection implements IteratorAggregate, Countable
         }
     }
 
+    /**
+     * Fetch routes from resource.
+     */
     public function fromResource(RouteResourceInterface $resource): void
     {
         $this->addMany($resource->get());
     }
 
+    /**
+     * Add many routes.
+     */
     public function addMany(array $routes): void
     {
         array_map([$this, 'add'], $routes);
     }
 
+    /**
+     * Add a route.
+     */
     public function add(Route $route): void
     {
         $this->routes[] = $route;
     }
 
+    /**
+     * Cache the routes.
+     */
     public function cache(): void
     {
         if ($this->cache !== null) {
@@ -45,22 +60,33 @@ abstract class AbstractRouteCollection implements IteratorAggregate, Countable
         }
     }
 
+    /**
+     * Getter.
+     */
     public function getName(): string
     {
         return $this->name;
     }
 
+    /**
+     * Getter.
+     */
     public function getRoutes(): array
     {
         return $this->routes;
     }
 
-
+    /**
+     * @inheritDoc
+     */
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->routes);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function count(): int
     {
         return count($this->routes);

@@ -6,5 +6,8 @@ namespace LukasJankowski\Routing\Parser;
 
 interface RouteParserInterface
 {
+    /**
+     * Parse the routes for the matcher.
+     */
     public function parse(array $routes): array;
 }

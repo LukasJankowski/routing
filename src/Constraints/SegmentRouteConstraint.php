@@ -9,6 +9,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class SegmentRouteConstraint extends AbstractRouteConstraint
 {
+    /**
+     * @inheritDoc
+     */
     public function validate(mixed $constraints = null): bool
     {
         foreach ($this->route->parsedParameters as $name => $props) {
@@ -28,11 +31,17 @@ final class SegmentRouteConstraint extends AbstractRouteConstraint
         return true;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getErrorMessage(): string
     {
         return Response::$statusTexts[Response::HTTP_NOT_FOUND];
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getErrorCode(): int
     {
         return Response::HTTP_NOT_FOUND;

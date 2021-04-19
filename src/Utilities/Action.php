@@ -8,6 +8,9 @@ use InvalidArgumentException;
 
 final class Action
 {
+    /**
+     * Normalize the action.
+     */
     public static function normalize(array $action): array
     {
         if (! is_callable($action, true) || ! method_exists($action[0], $action[1])) {

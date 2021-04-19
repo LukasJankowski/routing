@@ -13,11 +13,17 @@ abstract class AbstractRouteConstraint implements RouteConstraintInterface
 
     protected Request $request;
 
+    /**
+     * @inheritDoc
+     */
     public function setRoute(Route $route): void
     {
         $this->route = $route;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function setRequest(Request $request): void
     {
         $this->request = $request;

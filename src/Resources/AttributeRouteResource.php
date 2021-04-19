@@ -16,6 +16,9 @@ use RuntimeException;
 
 final class AttributeRouteResource implements RouteResourceInterface
 {
+    /**
+     * AttributeRouteResource constructor.
+     */
     public function __construct(private array $classes)
     {
         if (PHP_MAJOR_VERSION < 8) {
@@ -23,6 +26,9 @@ final class AttributeRouteResource implements RouteResourceInterface
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function get(): array
     {
         $routes = [];
@@ -33,6 +39,9 @@ final class AttributeRouteResource implements RouteResourceInterface
         return $routes;
     }
 
+    /**
+     * Retrieve routes from attributes on methods in class.
+     */
     private function makeRoutesFromClass(string $class): array
     {
         try {

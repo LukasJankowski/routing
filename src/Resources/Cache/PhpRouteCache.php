@@ -8,10 +8,16 @@ use ErrorException;
 
 final class PhpRouteCache implements RouteCacheInterface
 {
+    /**
+     * PhpRouteCache constructor.
+     */
     public function __construct(private string $file)
     {
     }
 
+    /**
+     * @inheritDoc
+     */
     public function set(array $routes): void
     {
         if (file_put_contents($this->file, serialize($routes)) === false) {
@@ -19,6 +25,9 @@ final class PhpRouteCache implements RouteCacheInterface
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function get(): array
     {
         if (! file_exists($this->file)) {

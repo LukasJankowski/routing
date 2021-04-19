@@ -33,6 +33,9 @@ final class Route implements Serializable
 
     private array $defaults = [];
 
+    /**
+     * Route constructor.
+     */
     public function __construct(
         array|string $methods,
         string $path,
@@ -71,6 +74,9 @@ final class Route implements Serializable
             ->default($defaults);
     }
 
+    /**
+     * Set defaults for segments.
+     */
     public function default(array $defaults): self
     {
         foreach ($defaults as $name => $default) {
@@ -80,6 +86,9 @@ final class Route implements Serializable
         return $this;
     }
 
+    /**
+     * Set middlewares for the route.
+     */
     public function middleware(array|string $middlewares): self
     {
         $this->middlewares = array_merge(
@@ -90,6 +99,9 @@ final class Route implements Serializable
         return $this;
     }
 
+    /**
+     * Set the scheme for the route.
+     */
     public function scheme(array|string $schemes): self
     {
         $this->constraint(SchemeRouteConstraint::class, (array) Scheme::normalize($schemes));
@@ -97,6 +109,9 @@ final class Route implements Serializable
         return $this;
     }
 
+    /**
+     * Add segment / custom constraints to the route.
+     */
     public function constraint(array|string $constraints, mixed $value = null): self
     {
         if (is_string($constraints)) {
@@ -112,6 +127,9 @@ final class Route implements Serializable
         return $this;
     }
 
+    /**
+     * Set the action.
+     */
     public function action(array $action): self
     {
         $this->action = Action::normalize($action);
@@ -119,6 +137,9 @@ final class Route implements Serializable
         return $this;
     }
 
+    /**
+     * Set the name.
+     */
     public function name(string $name): self
     {
         $this->name = $name;
@@ -126,6 +147,9 @@ final class Route implements Serializable
         return $this;
     }
 
+    /**
+     * Set the host constraint.
+     */
     public function host(string $host): self
     {
         $this->constraint(HostRouteConstraint::class, $host);
@@ -133,11 +157,17 @@ final class Route implements Serializable
         return $this;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function serialize(): string
     {
         return serialize(get_object_vars($this));
     }
 
+    /**
+     * @inheritDoc
+     */
     public function unserialize($data): void
     {
         [
@@ -152,16 +182,25 @@ final class Route implements Serializable
         ] = unserialize($data);
     }
 
+    /**
+     * Getter.
+     */
     public function getMethods(): array
     {
         return $this->getConstraints(MethodRouteConstraint::class);
     }
 
+    /**
+     * Getter.
+     */
     public function getPath(): string
     {
         return $this->path;
     }
 
+    /**
+     * Getter.
+     */
     public function getAction(): array
     {
         if ($this->action === null) {
@@ -173,41 +212,65 @@ final class Route implements Serializable
         return $this->action;
     }
 
+    /**
+     * Getter.
+     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
+    /**
+     * Getter.
+     */
     public function getHost(): ?string
     {
         return $this->getConstraints(HostRouteConstraint::class);
     }
 
+    /**
+     * Getter.
+     */
     public function getSchemes(): array
     {
         return $this->getConstraints(SchemeRouteConstraint::class);
     }
 
+    /**
+     * Getter.
+     */
     public function getConstraints(?string $key = null): mixed
     {
         return $key ? $this->constraints[$key] ?? null : $this->constraints;
     }
 
+    /**
+     * Getter.
+     */
     public function getMiddlewares(): array
     {
         return $this->middlewares;
     }
 
+    /**
+     * Getter.
+     */
     public function getDefaults(): array
     {
         return $this->defaults;
     }
 
+    /**
+     * Getter.
+     */
     public function getSegmentConstraints(): array
     {
         return $this->getConstraints(SegmentRouteConstraint::class);
     }
 
+    /**
+     * Add a constraint.
+     */
     private function addConstraint(string $constraint, mixed $value): void
     {
         class_exists($constraint)
@@ -215,6 +278,9 @@ final class Route implements Serializable
             : $this->addSegmentConstraint($constraint, $value);
     }
 
+    /**
+     * Add a segment constraint.
+     */
     private function addSegmentConstraint(string $constraint, false|string $pattern): void
     {
         $config = ['name' => $constraint, 'pattern' => $pattern];

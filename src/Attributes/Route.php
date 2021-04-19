@@ -9,6 +9,9 @@ use Attribute;
 #[Attribute(Attribute::TARGET_METHOD|Attribute::IS_REPEATABLE)]
 final class Route
 {
+    /**
+     * Route constructor.
+     */
     public function __construct(
         public array|string $method,
         public string $path,
@@ -21,6 +24,9 @@ final class Route
     ) {
     }
 
+    /**
+     * Make the base route instance.
+     */
     public function make(array $action): \LukasJankowski\Routing\Route
     {
         return new \LukasJankowski\Routing\Route(

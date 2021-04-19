@@ -9,6 +9,9 @@ use LukasJankowski\Routing\Request;
 
 final class Method
 {
+    /**
+     * Normalize the method.
+     */
     public static function normalize(array|string $methods): array|string
     {
         if (is_string($methods) && strtoupper($methods) === 'ANY') {

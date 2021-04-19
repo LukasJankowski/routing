@@ -14,6 +14,9 @@ final class RegexRouteParser implements RouteParserInterface
 
     private const REGEX_CLOSER = '$#';
 
+    /**
+     * @inheritDoc
+     */
     public function parse(array $routes): array
     {
         /** @var Route $route */
@@ -29,6 +32,9 @@ final class RegexRouteParser implements RouteParserInterface
         return $routes;
     }
 
+    /**
+     * Parse the route.
+     */
     private function parseRoute(Route $route): Route
     {
         $path = $route->getPath();
@@ -51,6 +57,9 @@ final class RegexRouteParser implements RouteParserInterface
         return $route;
     }
 
+    /**
+     * Create a regex for the dynamic segment.
+     */
     private function ensurePattern(string $segment, array $dynamic, array $constraints): string
     {
         $pattern = $dynamic['pattern'] ?: $this->patternFromConstraints($dynamic['name'], $constraints);
@@ -64,6 +73,9 @@ final class RegexRouteParser implements RouteParserInterface
         );
     }
 
+    /**
+     * Get the pattern from the predefined constraint.
+     */
     private function patternFromConstraints(string $name, array $constraints): ?string
     {
         foreach ($constraints as $constraint) {

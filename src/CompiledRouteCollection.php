@@ -10,6 +10,9 @@ use RuntimeException;
 
 final class CompiledRouteCollection extends AbstractRouteCollection
 {
+    /**
+     * CompiledRouteCollection constructor.
+     */
     public function __construct(
         RouteMatcherInterface $matcher,
         protected array $routes = [],
@@ -19,6 +22,9 @@ final class CompiledRouteCollection extends AbstractRouteCollection
         parent::__construct($matcher, $cache, $name);
     }
 
+    /**
+     * Match the routes.
+     */
     public function match(Request $request): bool
     {
         foreach ($this->routes as $route) {

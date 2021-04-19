@@ -9,5 +9,8 @@ use LukasJankowski\Routing\Route;
 
 interface RouteMatcherInterface
 {
+    /**
+     * Match the route against the request.
+     */
     public function matches(Route $route, Request $request): bool;
 }

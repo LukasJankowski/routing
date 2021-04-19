@@ -9,6 +9,9 @@ use LukasJankowski\Routing\Route;
 
 final class FakeRouteMatcher implements RouteMatcherInterface
 {
+    /**
+     * @inheritDoc
+     */
     public function matches(Route $route, Request $request, bool $return = true): bool
     {
         return $return;
