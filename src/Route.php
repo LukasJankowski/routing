@@ -18,6 +18,10 @@ final class Route implements Serializable
 
     /**
      * Route constructor.
+     *
+     * @param array<string,mixed> $constraints
+     * @param array $middlewares
+     * @param array<string,mixed> $defaults
      */
     public function __construct(
         private string $path,

@@ -11,6 +11,8 @@ final class Scheme
 {
     /**
      * Normalize the scheme.
+     *
+     * @param array<string>|string $schemes
      */
     public static function normalize(string|array $schemes): string|array
     {

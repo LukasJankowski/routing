@@ -26,6 +26,8 @@ final class RouteBuilder
 
     /**
      * RouteBuilder constructor.
+     *
+     * @param array<string> $methods
      */
     private function __construct(array $methods, string $path, private mixed $action = null)
     {
@@ -93,6 +95,8 @@ final class RouteBuilder
 
     /**
      * Build a route with multiple methods.
+     *
+     * @param array<string> $methods
      */
     public static function match(array $methods, string $path, mixed $action = null): self
     {
@@ -116,6 +120,8 @@ final class RouteBuilder
 
     /**
      * Set defaults for segments.
+     *
+     * @param array<string,mixed> $defaults
      */
     public function default(array $defaults): self
     {
@@ -128,6 +134,8 @@ final class RouteBuilder
 
     /**
      * Set middlewares for the route.
+     *
+     * @param array|string $middlewares
      */
     public function middleware(array|string $middlewares): self
     {
@@ -141,6 +149,8 @@ final class RouteBuilder
 
     /**
      * Set the scheme for the route.
+     *
+     * @param array<string>|string $schemes
      */
     public function scheme(array|string $schemes): self
     {
@@ -151,6 +161,8 @@ final class RouteBuilder
 
     /**
      * Add segment / custom constraints to the route.
+     *
+     * @param array<string,mixed>|string $constraints
      */
     public function constraint(array|string $constraints, mixed $value = null): self
     {

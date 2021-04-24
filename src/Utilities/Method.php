@@ -11,6 +11,8 @@ final class Method
 {
     /**
      * Normalize the method.
+     *
+     * @param array<string>|string $methods
      */
     public static function normalize(array|string $methods): array|string
     {

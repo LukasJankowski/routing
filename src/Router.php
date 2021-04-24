@@ -10,6 +10,41 @@ class Router
 
     private const SPECIFIC_SEGMENT_PATTERN = '#\1[\3\4]*?%s(?:\:([^\/]+))?\2#';
 
+    /** @var array<RouteCollection> */
+    private array $collections = [];
+
+    /**
+     * Resolve the request against all collections.
+     */
+    public function resolve(Request $request): false|RouteMatch
+    {
+        foreach ($this->collections as $collection) {
+            if ($route = $collection->match($request)) {
+                return $this->makeMatch($route, $request);
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Add many collections.
+     *
+     * @param array<RouteCollection> $collections
+     */
+    public function addMany(array $collections): void
+    {
+        array_map([$this, 'add'], $collections);
+    }
+
+    /**
+     * Add a collection.
+     */
+    public function add(RouteCollection $collection): void
+    {
+        $this->collections[] = $collection;
+    }
+
     /**
      * Get a specific dynamic segment from the path (pattern).
      */
@@ -91,7 +126,10 @@ class Router
         return '?';
     }
 
-    public static function makeMatch(Route $route, Request $request): RouteMatch
+    /**
+     * Make a match from the route & request.
+     */
+    public function makeMatch(Route $route, Request $request): RouteMatch
     {
         return new RouteMatch(
             $request->path,
@@ -101,5 +139,13 @@ class Router
             $route->getMiddlewares(),
             $route->parsedParameters
         );
+    }
+
+    /**
+     * Getter.
+     */
+    public function getCollections(): array
+    {
+        return $this->collections;
     }
 }

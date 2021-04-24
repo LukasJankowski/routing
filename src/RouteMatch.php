@@ -8,6 +8,9 @@ final class RouteMatch
 {
     /**
      * RouteMatch constructor.
+     *
+     * @param array $middlewares
+     * @param array<string,mixed> $parameters
      */
     public function __construct(
         private string $path,
@@ -16,8 +19,7 @@ final class RouteMatch
         private ?string $name,
         private array $middlewares,
         private array $parameters = [],
-    )
-    {
+    ) {
     }
 
     /**

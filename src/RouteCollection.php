@@ -4,56 +4,125 @@ declare(strict_types=1);
 
 namespace LukasJankowski\Routing;
 
-use LukasJankowski\Routing\Matchers\RouteMatcherInterface;
-use LukasJankowski\Routing\Parser\RouteParserInterface;
-use LukasJankowski\Routing\Resources\Cache\RouteCacheInterface;
-use LukasJankowski\Routing\Resources\RouteResourceInterface;
+use ArrayIterator;
+use Countable;
+use IteratorAggregate;
+use LukasJankowski\Routing\Handlers\RouteHandlerInterface;
+use LukasJankowski\Routing\Loaders\RouteLoaderInterface;
 
-final class RouteCollection extends AbstractRouteCollection
+class RouteCollection implements IteratorAggregate, Countable
 {
+    /** @var array<Route> */
     protected array $routes = [];
+
+    private bool $parsed = false;
 
     /**
      * RouteCollection constructor.
      */
     public function __construct(
-        RouteMatcherInterface $matcher,
-        private RouteParserInterface $parser,
-        private ?RouteResourceInterface $resource = null,
-        ?RouteCacheInterface $cache = null,
-        string $name = 'default'
+        private RouteHandlerInterface $handler,
+        private ?RouteLoaderInterface $loader = null,
+        private string $name = 'default'
     ) {
-        parent::__construct($matcher, $cache, $name);
-
-        if ($this->routes === [] && $this->resource) {
-            $this->fromResource($this->resource);
+        if ($this->loader) {
+            $this->fromLoader($loader);
         }
     }
 
     /**
-     * Make the collection or the compiled version if already parsed.
+     * Fetch routes from resource.
      */
-    public static function make(
-        RouteMatcherInterface $matcher,
-        RouteParserInterface $parser,
-        ?RouteResourceInterface $resource = null,
-        ?RouteCacheInterface $cache = null,
-        string $name = 'default'
-    ): self|CompiledRouteCollection {
-        $collection = new self($matcher, $parser, $resource, $cache, $name);
-
-        if (! empty($collection->getRoutes()) && $collection->getRoutes()[0]->parsedPath !== null) {
-            return new CompiledRouteCollection($matcher, $collection->getRoutes(), $cache, $name);
-        }
-
-        return $collection;
-    }
-
-    /**
-     * Parse the routes and return a compiled collection.
-     */
-    public function parse(): CompiledRouteCollection
+    public function fromLoader(RouteLoaderInterface $loader): void
     {
-        return new CompiledRouteCollection($this->matcher, $this->parser->parse($this->routes), $this->cache);
+        $this->addMany($loader->get());
+    }
+
+    /**
+     * Add many routes.
+     *
+     * @param array<Route> $routes
+     */
+    public function addMany(array $routes): void
+    {
+        array_map([$this, 'add'], $routes);
+    }
+
+    /**
+     * Match the request against the routes
+     */
+    public function match(Request $request): false|Route
+    {
+        if (! $this->parsed) {
+            $this->parse();
+        }
+
+        foreach ($this->routes as $route) {
+            if ($this->handler->matches($route, $request)) {
+                return $route;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Parse the routes.
+     */
+    public function parse(): void
+    {
+        $this->routes = $this->handler->parse($this->routes);
+
+        $this->parsed = true;
+    }
+
+    /**
+     * Add a route.
+     */
+    public function add(Route $route): void
+    {
+        $this->routes[] = $route;
+    }
+
+    /**
+     * Cache the routes.
+     */
+    public function cache(): void
+    {
+        if ($this->loader !== null) {
+            $this->loader->set($this->routes);
+        }
+    }
+
+    /**
+     * Getter.
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Getter.
+     */
+    public function getRoutes(): array
+    {
+        return $this->routes;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getIterator(): ArrayIterator
+    {
+        return new ArrayIterator($this->routes);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function count(): int
+    {
+        return count($this->routes);
     }
 }

@@ -27,6 +27,8 @@ final class Route
 
     /**
      * Make the base route instance.
+     *
+     * @param array<string, string> $action
      */
     public function make(array $action): \LukasJankowski\Routing\Route
     {

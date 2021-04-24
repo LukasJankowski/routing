@@ -51,7 +51,7 @@ final class Request
      */
     public function __construct(string $method, string $path, string $host, string $scheme)
     {
-        $this->method = $method === '' ? 'GET' : Method::normalize($method);
+        $this->method = $method === '' ? self::METHOD_GET : Method::normalize($method);
         $this->path = $path === '' ? '/' : Path::normalize($path);
         if ($this->isCli()) {
             $this->host = $host === '' ? php_uname('n') : $host;
