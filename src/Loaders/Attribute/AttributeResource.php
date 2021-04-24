@@ -40,6 +40,8 @@ final class AttributeResource implements ResourceInterface
 
     /**
      * Retrieve routes from attributes on methods in class.
+     *
+     * @return array<Route>
      */
     private function makeRoutesFromClass(string $class): array
     {
@@ -79,6 +81,8 @@ final class AttributeResource implements ResourceInterface
 
     /**
      * Get the routes from the class.
+     *
+     * @return array<Route>
      */
     public function getRoutes(ReflectionClass $class): array
     {
