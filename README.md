@@ -68,8 +68,8 @@ include:
     - Schemes &check;
 
 - Named routes / LinkBuilder / Redirects
-- Route groups (like Laravel)
-    - Named groups (?)
+- Route groups (like Laravel) &check;
+    - Named groups &cross;
     
 - PSR Caching Contracts
 - RouteMatch object for matches &check;
