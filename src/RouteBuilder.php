@@ -14,14 +14,19 @@ use LukasJankowski\Routing\Utilities\Scheme;
 
 final class RouteBuilder
 {
+    /** @var array<array<string,mixed>> */
+    private static array $stack = [];
+
     private string $path;
 
     private ?string $name = null;
 
     private array $middlewares = [];
 
+    /** @var array<string,mixed> */
     private array $defaults = [];
 
+    /** @var array<string,mixed> */
     private array $constraints = [];
 
     /**
@@ -103,11 +108,22 @@ final class RouteBuilder
         return new self($methods, $path, $action);
     }
 
+    public static function group(array $properties, \Closure $closure): void
+    {
+        self::$stack[] = $properties;
+
+        $closure();
+
+        array_pop(self::$stack);
+    }
+
     /**
      * Build the route.
      */
     public function build(): Route
     {
+        $this->applyStacks();
+
         return new Route(
             $this->path,
             $this->action,
@@ -135,7 +151,6 @@ final class RouteBuilder
     /**
      * Set middlewares for the route.
      *
-     * @param array|string $middlewares
      */
     public function middleware(array|string $middlewares): self
     {
@@ -230,5 +245,29 @@ final class RouteBuilder
             $this->constraints[SegmentConstraint::class],
             [$config]
         );
+    }
+
+    /**
+     * Apply group stacks to current route.
+     */
+    private function applyStacks(): void
+    {
+        foreach (self::$stack as $props) {
+            $path = $props['path'] ?? null;
+            $name = $props['name'] ?? null;
+            $middleware = $props['middleware'] ?? null;
+
+            if ($path) {
+                $this->path = Path::normalize(Path::normalize($path) . $this->path);
+            }
+
+            if ($name) {
+                $this->name($name . $this->name);
+            }
+
+            if ($middleware) {
+                $this->middleware($middleware);
+            }
+        }
     }
 }

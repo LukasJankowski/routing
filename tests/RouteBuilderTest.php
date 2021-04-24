@@ -95,4 +95,47 @@ class RouteBuilderTest extends TestCase
         $route = RouteBuilder::match(['get', 'post'], '/')->build();
         $this->assertEquals(['GET', 'POST'], $route->getMethods());
     }
+
+    public function test_it_can_use_groups()
+    {
+        RouteBuilder::group(['path' => '/prefix', 'name' => 'prefix.', 'middleware' => ['prefix']], function () {
+            $route1 = RouteBuilder::get('/path1')
+                ->name('name1')
+                ->middleware('middleware1')
+                ->build();
+
+            $this->assertEquals('/prefix/path1', $route1->getPath());
+            $this->assertEquals('prefix.name1', $route1->getName());
+            $this->assertEquals(['prefix', 'middleware1'], $route1->getMiddlewares());
+
+            RouteBuilder::group(['path' => '/another', 'name' => 'another.', 'middleware' => ['another']], function () {
+                $route1 = RouteBuilder::get('/path1')
+                    ->name('name1')
+                    ->middleware('middleware1')
+                    ->build();
+
+                $this->assertEquals('/another/prefix/path1', $route1->getPath());
+                $this->assertEquals('another.prefix.name1', $route1->getName());
+                $this->assertEquals(['another', 'prefix', 'middleware1'], $route1->getMiddlewares());
+            });
+
+            $route2 = RouteBuilder::get('/path2')
+                ->name('name2')
+                ->middleware('middleware2')
+                ->build();
+
+            $this->assertEquals('/prefix/path2', $route2->getPath());
+            $this->assertEquals('prefix.name2', $route2->getName());
+            $this->assertEquals(['prefix', 'middleware2'], $route2->getMiddlewares());
+        });
+
+        $route1 = RouteBuilder::get('/path1')
+            ->name('name1')
+            ->middleware('middleware1')
+            ->build();
+
+        $this->assertEquals('/path1', $route1->getPath());
+        $this->assertEquals('name1', $route1->getName());
+        $this->assertEquals(['middleware1'], $route1->getMiddlewares());
+    }
 }

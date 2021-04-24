@@ -5,9 +5,9 @@ namespace Loaders\Attribute;
 use InvalidArgumentException;
 use LukasJankowski\Routing\Loaders\Attribute\AttributeResource;
 use LukasJankowski\Routing\RouteBuilder;
+use LukasJankowski\Routing\Tests\fixtures\AlternateAttributeClass;
 use LukasJankowski\Routing\Tests\fixtures\AttributeClass;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 
 class AttributeResourceTest extends TestCase
 {
@@ -17,21 +17,41 @@ class AttributeResourceTest extends TestCase
 
         $this->assertEquals(
             [
-                RouteBuilder::get('/', [AttributeClass::class, 'method'])
-                    ->name('name')
+                RouteBuilder::get('/prefix', [AttributeClass::class, 'method'])
+                    ->name('prefix.name')
                     ->host('host.com')
                     ->scheme('https')
                     ->constraint('to', '\d+')
-                    ->middleware('test_middleware')
+                    ->middleware(['prefix', 'test_middleware'])
                     ->default(['to' => 'default'])
                     ->build(),
-                RouteBuilder::match(['post', 'put'], '/route', [AttributeClass::class, 'test'])->build(),
-                RouteBuilder::get('/test1', [AttributeClass::class, 'multiple'])->build(),
-                RouteBuilder::get('/test2', [AttributeClass::class, 'multiple'])->build(),
+                RouteBuilder::match(['post', 'put'], '/prefix/route', [AttributeClass::class, 'test'])
+                    ->name('prefix.')
+                    ->middleware('prefix')
+                    ->build(),
+                RouteBuilder::get('/prefix/test1', [AttributeClass::class, 'multiple'])
+                    ->name('prefix.')
+                    ->middleware('prefix')
+                    ->build(),
+                RouteBuilder::get('/prefix/test2', [AttributeClass::class, 'multiple'])
+                    ->name('prefix.')
+                    ->middleware('prefix')
+                    ->build(),
             ],
             $resource->get()
         );
     }
+
+    public function test_it_can_retrieve_attributes_without_group()
+    {
+        $resource = new AttributeResource([AlternateAttributeClass::class]);
+
+        $this->assertEquals(
+            [RouteBuilder::get('/', [AlternateAttributeClass::class, 'method'])->build()],
+            $resource->get()
+        );
+    }
+
 
     public function test_it_throws_an_exception_on_invalid_class()
     {
