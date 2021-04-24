@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace LukasJankowski\Routing\Handlers\Regex;
 
 use const ARRAY_FILTER_USE_KEY;
+use LukasJankowski\Routing\Constraints\ConstraintInterface;
 use LukasJankowski\Routing\Constraints\HostConstraint;
 use LukasJankowski\Routing\Constraints\MethodConstraint;
-use LukasJankowski\Routing\Constraints\ConstraintInterface;
 use LukasJankowski\Routing\Constraints\SchemeConstraint;
 use LukasJankowski\Routing\Constraints\SegmentConstraint;
 use LukasJankowski\Routing\Exceptions\BadRouteException;

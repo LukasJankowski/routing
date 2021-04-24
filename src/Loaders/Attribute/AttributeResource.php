@@ -9,6 +9,7 @@ use LukasJankowski\Routing\Attributes\Group;
 use LukasJankowski\Routing\Attributes\Route;
 use LukasJankowski\Routing\Loaders\ResourceInterface;
 use LukasJankowski\Routing\RouteBuilder;
+use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
@@ -43,33 +44,22 @@ final class AttributeResource implements ResourceInterface
     private function makeRoutesFromClass(string $class): array
     {
         $class = $this->getClass($class);
-        /** @var \ReflectionAttribute $group */
+        /** @var ReflectionAttribute $group */
         $group = $class->getAttributes(Group::class);
 
         if (! empty($group)) {
             $routes = [];
-            RouteBuilder::group($group[0]->newInstance()->properties(), function () use ($class, &$routes) {
-                $routes = $this->getRoutes($class);
-            });
+            RouteBuilder::group(
+                $group[0]->newInstance()->properties(),
+                function () use ($class, &$routes) {
+                    $routes = $this->getRoutes($class);
+                }
+            );
 
             return $routes;
         }
 
         return $this->getRoutes($class);
-    }
-
-    public function getRoutes(ReflectionClass $class): array
-    {
-        $routes = [];
-        foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-            foreach ($method->getAttributes(Route::class) as $attribute) {
-                /** @var \LukasJankowski\Routing\Route $route */
-                $route = $attribute->newInstance()->make([$class->getName(), $method->getName()]);
-                $routes[] = $route;
-            }
-        }
-
-        return $routes;
     }
 
     /**
@@ -85,5 +75,22 @@ final class AttributeResource implements ResourceInterface
                 previous: $exception
             );
         }
+    }
+
+    /**
+     * Get the routes from the class.
+     */
+    public function getRoutes(ReflectionClass $class): array
+    {
+        $routes = [];
+        foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            foreach ($method->getAttributes(Route::class) as $attribute) {
+                /** @var \LukasJankowski\Routing\Route $route */
+                $route = $attribute->newInstance()->make([$class->getName(), $method->getName()]);
+                $routes[] = $route;
+            }
+        }
+
+        return $routes;
     }
 }

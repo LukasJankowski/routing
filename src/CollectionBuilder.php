@@ -8,11 +8,11 @@ use InvalidArgumentException;
 use LukasJankowski\Routing\Handlers\DefaultHandler;
 use LukasJankowski\Routing\Handlers\Fake\FakeMatcher;
 use LukasJankowski\Routing\Handlers\Fake\FakeParser;
+use LukasJankowski\Routing\Handlers\HandlerInterface;
 use LukasJankowski\Routing\Handlers\Regex\RegexMatcher;
 use LukasJankowski\Routing\Handlers\Regex\RegexParser;
-use LukasJankowski\Routing\Handlers\HandlerInterface;
-use LukasJankowski\Routing\Loaders\DefaultLoader;
 use LukasJankowski\Routing\Loaders\CacheInterface;
+use LukasJankowski\Routing\Loaders\DefaultLoader;
 use LukasJankowski\Routing\Loaders\LoaderInterface;
 use LukasJankowski\Routing\Loaders\ResourceInterface;
 
