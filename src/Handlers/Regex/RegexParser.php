@@ -23,7 +23,7 @@ final class RegexParser implements ParserInterface
         /** @var Route $route */
         foreach ($routes as &$route) {
             // Routes are already parsed (e.g. loaded from cache)
-            if ($route->parsedPath !== null) {
+            if ($route->getPrepared() !== null) {
                 return $routes;
             }
 
@@ -53,7 +53,9 @@ final class RegexParser implements ParserInterface
             $path
         );
 
-        $route->parsedPath = self::REGEX_OPENER . trim($compiledRegex, '/') . self::REGEX_CLOSER;
+        $route->setPrepared(
+            self::REGEX_OPENER . trim($compiledRegex, '/') . self::REGEX_CLOSER
+        );
 
         return $route;
     }

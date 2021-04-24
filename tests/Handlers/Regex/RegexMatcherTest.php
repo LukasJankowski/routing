@@ -225,7 +225,7 @@ class RegexMatcherTest extends TestCase
             $route = $parser->parse([$route])[0];
 
             $this->assertTrue($matcher->matches($route, $request));
-            $this->assertEquals($props['expect'], $route->parsedParameters);
+            $this->assertEquals($props['expect'], $route->getParameters());
         }
 
         foreach ($defaults as $routePath => $props) {
@@ -234,7 +234,7 @@ class RegexMatcherTest extends TestCase
             $route = $parser->parse([$route])[0];
 
             $this->assertTrue($matcher->matches($route, $request));
-            $this->assertEquals($props['expect'], $route->parsedParameters);
+            $this->assertEquals($props['expect'], $route->getParameters());
         }
     }
 
@@ -262,7 +262,7 @@ class RegexMatcherTest extends TestCase
         $this->assertTrue($matcher->matches($route, $request));
         $this->assertEquals(
             ['var' => '123456', 'opt' => 'optional', 'wc' => ['wild', 'cards']],
-            $route->parsedParameters
+            $route->getParameters()
         );
     }
 

@@ -12,9 +12,10 @@ use Serializable;
 
 final class Route implements Serializable
 {
-    public mixed $parsedPath = null;
+    private mixed $prepared = null;
 
-    public array $parsedParameters = [];
+    /** @var array<string,mixed> */
+    private array $parameters = [];
 
     /**
      * Route constructor.
@@ -53,8 +54,8 @@ final class Route implements Serializable
             'constraints' => $this->constraints,
             'middlewares' => $this->middlewares,
             'defaults' => $this->defaults,
-            'parsedPath' => $this->parsedPath,
-            'parsedParameters' => $this->parsedParameters,
+            'prepared' => $this->prepared,
+            'parameters' => $this->parameters,
         ] = unserialize($data);
     }
 
@@ -136,5 +137,45 @@ final class Route implements Serializable
     public function getSegmentConstraints(): array
     {
         return $this->getConstraints(SegmentConstraint::class);
+    }
+
+    /**
+     * Getter.
+     */
+    public function getPrepared(): mixed
+    {
+        return $this->prepared;
+    }
+
+    /**
+     * Getter.
+     */
+    public function getParameters(): array
+    {
+        return $this->parameters;
+    }
+
+    /**
+     * Setter.
+     */
+    public function setPrepared(mixed $prepared): void
+    {
+        $this->prepared = $prepared;
+    }
+
+    /**
+     * Setter.
+     */
+    public function setParameters(string|array $parameter, mixed $value = null): void
+    {
+        if (is_string($parameter)) {
+            $this->parameters[$parameter] = $value;
+
+            return;
+        }
+
+        foreach ($parameter as $name => $value) {
+            $this->parameters[$name] = $value;
+        }
     }
 }

@@ -68,7 +68,7 @@ class RegexParserTest extends TestCase
             $parsed = $parser->parse([$route])[0];
 
             $this->assertEquals($route->getPath(), $parsed->getPath());
-            $this->assertEquals($expected, $parsed->parsedPath);
+            $this->assertEquals($expected, $parsed->getPrepared());
         }
     }
 
@@ -77,13 +77,13 @@ class RegexParserTest extends TestCase
         $parser = new RegexParser();
 
         $route = RouteBuilder::get('/')->build();
-        $route->parsedPath = '/some-parsed-path';
+        $route->setPrepared('/some-parsed-path');
 
         /** @var Route $parsed */
         $parsed = $parser->parse([$route])[0];
 
 
-        $this->assertEquals('/some-parsed-path', $parsed->parsedPath);
+        $this->assertEquals('/some-parsed-path', $parsed->getPrepared());
         $this->assertEquals($route, $parsed);
     }
 }

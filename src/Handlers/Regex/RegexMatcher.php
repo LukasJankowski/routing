@@ -90,16 +90,18 @@ final class RegexMatcher implements MatcherInterface
     private function matchPath(Route $route, Request $request): bool
     {
         $matches = [];
-        $result = preg_match($route->parsedPath, $request->path, $matches, PREG_UNMATCHED_AS_NULL);
+        $result = preg_match($route->getPrepared(), $request->path, $matches, PREG_UNMATCHED_AS_NULL);
 
         if (! $result || empty($matches)) {
             return false;
         }
 
-        $route->parsedParameters = array_filter($matches, fn ($key) => is_string($key), ARRAY_FILTER_USE_KEY);
+        $route->setParameters(
+            array_filter($matches, fn ($key) => is_string($key), ARRAY_FILTER_USE_KEY)
+        );
 
-        foreach ($route->parsedParameters as $name => $parameter) {
-            $route->parsedParameters[$name] = $this->getParameter($route, $name, $parameter);
+        foreach ($route->getParameters() as $name => $parameter) {
+            $route->setParameters($name, $this->getParameter($route, $name, $parameter));
         }
 
         return true;

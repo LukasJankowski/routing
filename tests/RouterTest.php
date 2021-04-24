@@ -35,7 +35,7 @@ class RouterTest extends TestCase
             ->default(['to' => 'default'])
             ->build();
 
-        $route->parsedParameters['param'] = 'value';
+        $route->setParameters('param', 'value');
 
         $request = new Request('GET', '/', 'host.com', 'HTTPS');
 

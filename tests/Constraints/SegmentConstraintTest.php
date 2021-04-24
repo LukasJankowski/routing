@@ -35,7 +35,7 @@ class SegmentConstraintTest extends TestCase
     public function test_it_sets_the_parsed_parameters()
     {
         $route = new Route('get', '/');
-        $route->parsedParameters = [
+        $route->setParameters([
             'var' => [
                 'value' => 'string',
                 'wildcard' => false,
@@ -68,7 +68,7 @@ class SegmentConstraintTest extends TestCase
                 'value' => ['default'],
                 'wildcard' => true,
             ],
-        ];
+        ]);
 
 
         $constraint = new SegmentConstraint();
@@ -88,7 +88,7 @@ class SegmentConstraintTest extends TestCase
                 'unset' => null,
                 'default' => ['default'],
             ],
-            $route->parsedParameters
+            $route->getParameters()
         );
     }
 }

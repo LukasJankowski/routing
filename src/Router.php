@@ -137,7 +137,7 @@ class Router
             $route->getAction(),
             $route->getName(),
             $route->getMiddlewares(),
-            $route->parsedParameters
+            $route->getParameters()
         );
     }
 

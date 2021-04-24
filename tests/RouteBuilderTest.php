@@ -39,8 +39,8 @@ class RouteBuilderTest extends TestCase
         );
         $this->assertEquals(['test_middleware'], $route->getMiddlewares());
         $this->assertEquals(['to' => 'default'], $route->getDefaults());
-        $this->assertNull($route->parsedPath);
-        $this->assertEmpty($route->parsedParameters);
+        $this->assertNull($route->getPrepared());
+        $this->assertEmpty($route->getParameters());
     }
 
     public function test_it_can_build_multiple_segment_constraints()
