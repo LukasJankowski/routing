@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LukasJankowski\Routing\Attributes;
 
 use Attribute;
+use LukasJankowski\Routing\RouteBuilder;
 
 #[Attribute(Attribute::TARGET_METHOD|Attribute::IS_REPEATABLE)]
 final class Route
@@ -29,16 +30,23 @@ final class Route
      */
     public function make(array $action): \LukasJankowski\Routing\Route
     {
-        return new \LukasJankowski\Routing\Route(
-            $this->method,
-            $this->path,
-            $action,
-            $this->name,
-            $this->host,
-            $this->schemes,
-            $this->constraints,
-            $this->middlewares,
-            $this->defaults
-        );
+        $builder = RouteBuilder::match((array) $this->method, $this->path, $action);
+
+        if ($this->name) {
+            $builder->name($this->name);
+        }
+
+        if ($this->host) {
+            $builder->host($this->host);
+        }
+
+        if (! empty($this->schemes)) {
+            $builder->scheme($this->schemes);
+        }
+
+        return $builder->constraint($this->constraints)
+            ->middleware($this->middlewares)
+            ->default($this->defaults)
+            ->build();
     }
 }

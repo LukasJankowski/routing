@@ -5,6 +5,7 @@ namespace Constraints;
 use LukasJankowski\Routing\Constraints\HostRouteConstraint;
 use LukasJankowski\Routing\Request;
 use LukasJankowski\Routing\Route;
+use LukasJankowski\Routing\RouteBuilder;
 use PHPUnit\Framework\TestCase;
 
 class HostRouteConstraintTest extends TestCase
@@ -52,7 +53,7 @@ class HostRouteConstraintTest extends TestCase
             $request->host = $requestHost;
 
             $constraint->setRequest($request);
-            $constraint->setRoute(new Route('get', '/', host: $routeHost));
+            $constraint->setRoute(RouteBuilder::get('/')->host($routeHost)->build());
 
             $this->assertTrue($constraint->validate());
         }
@@ -63,7 +64,7 @@ class HostRouteConstraintTest extends TestCase
             $request->host = $requestHost;
 
             $constraint->setRequest($request);
-            $constraint->setRoute(new Route('get', '/', host: $routeHost));
+            $constraint->setRoute(RouteBuilder::get('/')->host($routeHost)->build());
 
             $this->assertFalse($constraint->validate());
         }

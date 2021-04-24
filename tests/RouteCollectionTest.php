@@ -38,7 +38,10 @@ class RouteCollectionTest extends TestCase
         $collection->add(new Route('get', '/'));
 
         $this->assertIsIterable($collection);
+        $this->assertIsIterable($collection->getIterator());
+
         $this->assertCount(1, $collection);
+
     }
 
     public function test_it_returns_a_compiled_collection_when_parsing()
@@ -161,5 +164,12 @@ class RouteCollectionTest extends TestCase
         );
 
         $this->assertInstanceOf(CompiledRouteCollection::class, $collection);
+
+        $collection = RouteCollection::make(
+            new FakeRouteMatcher(),
+            new FakeRouteParser(),
+        );
+
+        $this->assertInstanceOf(RouteCollection::class, $collection);
     }
 }

@@ -12,16 +12,28 @@ use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 final class Request
 {
+    public const METHOD_GET = SymfonyRequest::METHOD_GET;
+
+    public const METHOD_POST = SymfonyRequest::METHOD_POST;
+
+    public const METHOD_PUT = SymfonyRequest::METHOD_PUT;
+
+    public const METHOD_PATCH = SymfonyRequest::METHOD_PATCH;
+
+    public const METHOD_DELETE = SymfonyRequest::METHOD_DELETE;
+
+    public const METHOD_HEAD = SymfonyRequest::METHOD_HEAD;
+
+    public const METHOD_OPTIONS = SymfonyRequest::METHOD_OPTIONS;
+
     public const METHODS = [
-        SymfonyRequest::METHOD_GET,
-        SymfonyRequest::METHOD_POST,
-        SymfonyRequest::METHOD_PUT,
-        SymfonyRequest::METHOD_PATCH,
-        SymfonyRequest::METHOD_DELETE,
-        SymfonyRequest::METHOD_HEAD,
-        SymfonyRequest::METHOD_OPTIONS,
-        SymfonyRequest::METHOD_PURGE,
-        SymfonyRequest::METHOD_TRACE,
+        self::METHOD_GET,
+        self::METHOD_POST,
+        self::METHOD_PUT,
+        self::METHOD_PATCH,
+        self::METHOD_DELETE,
+        self::METHOD_HEAD,
+        self::METHOD_OPTIONS,
     ];
 
     public const SCHEMES = ['HTTPS', 'HTTP', ''];

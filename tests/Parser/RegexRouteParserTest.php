@@ -5,6 +5,7 @@ namespace Parser;
 use LukasJankowski\Routing\Parser\RegexRouteParser;
 use LukasJankowski\Routing\Parser\RouteParserInterface;
 use LukasJankowski\Routing\Route;
+use LukasJankowski\Routing\RouteBuilder;
 use PHPUnit\Framework\TestCase;
 
 class RegexRouteParserTest extends TestCase
@@ -62,12 +63,27 @@ class RegexRouteParserTest extends TestCase
         ];
 
         foreach ($paths as $path => $expected) {
-            $route = new Route('get', $path);
+            $route = RouteBuilder::get($path)->build();
             /** @var Route $parsed */
             $parsed = $parser->parse([$route])[0];
 
             $this->assertEquals($route->getPath(), $parsed->getPath());
             $this->assertEquals($expected, $parsed->parsedPath);
         }
+    }
+
+    public function test_it_doesnt_parse_when_already_parsed()
+    {
+        $parser = new RegexRouteParser();
+
+        $route = RouteBuilder::get('/')->build();
+        $route->parsedPath = '/some-parsed-path';
+
+        /** @var Route $parsed */
+        $parsed = $parser->parse([$route])[0];
+
+
+        $this->assertEquals('/some-parsed-path', $parsed->parsedPath);
+        $this->assertEquals($route, $parsed);
     }
 }

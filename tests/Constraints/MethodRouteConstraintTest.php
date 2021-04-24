@@ -5,6 +5,7 @@ namespace Constraints;
 use LukasJankowski\Routing\Constraints\MethodRouteConstraint;
 use LukasJankowski\Routing\Request;
 use LukasJankowski\Routing\Route;
+use LukasJankowski\Routing\RouteBuilder;
 use PHPUnit\Framework\TestCase;
 
 class MethodRouteConstraintTest extends TestCase
@@ -40,7 +41,7 @@ class MethodRouteConstraintTest extends TestCase
             'get' => 'get',
             'post' => 'post',
             'put' => ['post', 'put', 'patch'],
-            'purge' => ['purge']
+            'head' => ['head']
         ];
 
         $invalid = [
@@ -48,14 +49,14 @@ class MethodRouteConstraintTest extends TestCase
             'post' => 'patch',
             'put' => 'get',
             'patch' => ['post', 'get'],
-            'purge' => ['get'],
+            'head' => ['get'],
         ];
 
         foreach ($valid as $requestMethod => $routeMethod) {
             $request = new Request($requestMethod, '/', '', '');
 
             $constraint->setRequest($request);
-            $constraint->setRoute(new Route($routeMethod, '/'));
+            $constraint->setRoute(RouteBuilder::match((array) $routeMethod, '/')->build());
 
             $this->assertTrue($constraint->validate());
         }
@@ -65,7 +66,7 @@ class MethodRouteConstraintTest extends TestCase
             $request = new Request($requestMethod, '/', '', '');
 
             $constraint->setRequest($request);
-            $constraint->setRoute(new Route($routeMethod, '/'));
+            $constraint->setRoute(RouteBuilder::match((array) $routeMethod, '/')->build());
 
             $this->assertFalse($constraint->validate());
         }

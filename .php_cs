@@ -1,7 +1,5 @@
 <?php
 $finder = Symfony\Component\Finder\Finder::create()
-    ->notPath('docs/*')
-    ->notPath('vendor')
     ->in([
         __DIR__ . '/src',
     ])

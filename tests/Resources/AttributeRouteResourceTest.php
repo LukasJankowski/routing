@@ -4,7 +4,7 @@ namespace Resources;
 
 use InvalidArgumentException;
 use LukasJankowski\Routing\Resources\AttributeRouteResource;
-use LukasJankowski\Routing\Route;
+use LukasJankowski\Routing\RouteBuilder;
 use LukasJankowski\Routing\Tests\fixtures\AttributeClass;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -28,10 +28,17 @@ class AttributeRouteResourceTest extends TestCase
 
         $this->assertEquals(
             [
-                (new Route('get', '/'))->action([AttributeClass::class, 'method']),
-                (new Route(['post', 'put'], '/route'))->action([AttributeClass::class, 'test']),
-                (new Route('get', '/test1'))->action([AttributeClass::class, 'multiple']),
-                (new Route('get', '/test2'))->action([AttributeClass::class, 'multiple'])
+                RouteBuilder::get('/', [AttributeClass::class, 'method'])
+                    ->name('name')
+                    ->host('host.com')
+                    ->scheme('https')
+                    ->constraint('to', '\d+')
+                    ->middleware('test_middleware')
+                    ->default(['to' => 'default'])
+                    ->build(),
+                RouteBuilder::match(['post', 'put'], '/route', [AttributeClass::class, 'test'])->build(),
+                RouteBuilder::get('/test1', [AttributeClass::class, 'multiple'])->build(),
+                RouteBuilder::get('/test2', [AttributeClass::class, 'multiple'])->build(),
             ],
             $resource->get()
         );

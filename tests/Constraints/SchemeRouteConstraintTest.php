@@ -5,6 +5,7 @@ namespace Constraints;
 use LukasJankowski\Routing\Constraints\SchemeRouteConstraint;
 use LukasJankowski\Routing\Request;
 use LukasJankowski\Routing\Route;
+use LukasJankowski\Routing\RouteBuilder;
 use PHPUnit\Framework\TestCase;
 
 class SchemeRouteConstraintTest extends TestCase
@@ -52,7 +53,7 @@ class SchemeRouteConstraintTest extends TestCase
             $request->scheme = $requestScheme;
 
             $constraint->setRequest($request);
-            $constraint->setRoute(new Route('get', '/', schemes: $routeScheme));
+            $constraint->setRoute(RouteBuilder::get('/')->scheme($routeScheme)->build());
 
             $this->assertTrue($constraint->validate());
         }
@@ -63,7 +64,7 @@ class SchemeRouteConstraintTest extends TestCase
             $request->scheme = $requestScheme;
 
             $constraint->setRequest($request);
-            $constraint->setRoute(new Route('get', '/', schemes: $routeScheme));
+            $constraint->setRoute(RouteBuilder::get('/')->scheme($routeScheme)->build());
 
             $this->assertFalse($constraint->validate());
         }

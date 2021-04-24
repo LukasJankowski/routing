@@ -4,6 +4,7 @@ namespace Resources\Cache;
 
 use LukasJankowski\Routing\Resources\Cache\ArrayRouteCache;
 use LukasJankowski\Routing\Route;
+use LukasJankowski\Routing\RouteBuilder;
 use PHPUnit\Framework\TestCase;
 
 class ArrayRouteCacheTest extends TestCase
@@ -11,10 +12,10 @@ class ArrayRouteCacheTest extends TestCase
     public function test_it_can_store_routes()
     {
         $routes = [
-            new Route('get', '/'),
-            new Route(['post', 'put'], '/route'),
-            new Route('get', '/test1'),
-            new Route('get', '/test2')
+            RouteBuilder::get('/')->build(),
+            RouteBuilder::match(['post', 'put'], '/route')->build(),
+            RouteBuilder::get('/test1')->build(),
+            RouteBuilder::get('/test2')->build(),
         ];
 
         $cache = new ArrayRouteCache();

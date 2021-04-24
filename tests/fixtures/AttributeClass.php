@@ -8,7 +8,16 @@ use LukasJankowski\Routing\Attributes\Route;
 
 final class AttributeClass
 {
-    #[Route('get', '/')]
+    #[Route(
+        'get',
+        '/',
+        'name',
+        'host.com',
+        'https',
+        ['to' => '\d+'],
+        'test_middleware',
+        ['to' => 'default']
+    )]
     public function method(string $anything): void
     {
         //
@@ -17,19 +26,19 @@ final class AttributeClass
     #[Route(['post', 'put'], '/route')]
     public function test(): void
     {
-
+        //
     }
 
     #[Route('get', '/test1')]
     #[Route('get', '/test2')]
     public function multiple(): void
     {
-
+        //
     }
 
     #[Route('get', '/not-found')]
     private function hidden(): void
     {
-
+        //
     }
 }

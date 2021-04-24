@@ -2,12 +2,14 @@
 
 namespace Matchers;
 
+use LukasJankowski\Routing\CompiledRouteCollection;
 use LukasJankowski\Routing\Matchers\RouteMatcherInterface;
 use LukasJankowski\Routing\Matchers\RegexRouteMatcher;
 use LukasJankowski\Routing\Parser\RegexRouteParser;
 use LukasJankowski\Routing\Request;
-use LukasJankowski\Routing\Route;
+use LukasJankowski\Routing\RouteBuilder;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 class RegexRouteMatcherTest extends TestCase
 {
@@ -105,7 +107,7 @@ class RegexRouteMatcherTest extends TestCase
         ];
 
         foreach ($valid as $routePath => $requestPath) {
-            $route = new Route('get', $routePath);
+            $route = RouteBuilder::get($routePath)->build();
             $request = new Request('get', $requestPath, '', '');
             $route = $parser->parse([$route])[0];
 
@@ -113,7 +115,7 @@ class RegexRouteMatcherTest extends TestCase
         }
 
         foreach ($invalid as $routePath => $requestPath) {
-            $route = new Route('get', $routePath);
+            $route = RouteBuilder::get($routePath)->build();
             $request = new Request('get', $requestPath, '', '');
             $route = $parser->parse([$route])[0];
 
@@ -126,7 +128,7 @@ class RegexRouteMatcherTest extends TestCase
         $matcher = new RegexRouteMatcher();
         $parser = new RegexRouteParser();
 
-        $route = new Route('get', '/');
+        $route = RouteBuilder::get('/')->build();
         $request = new Request('post', '/', '', '');
         $route = $parser->parse([$route])[0];
 
@@ -140,7 +142,7 @@ class RegexRouteMatcherTest extends TestCase
         $matcher = new RegexRouteMatcher();
         $parser = new RegexRouteParser();
 
-        $route = new Route('get', '/', host: 'another.com');
+        $route = RouteBuilder::get('/')->host('another.com')->build();
         $request = new Request('get', '/', 'test.com', '');
         $route = $parser->parse([$route])[0];
 
@@ -155,7 +157,7 @@ class RegexRouteMatcherTest extends TestCase
         $matcher = new RegexRouteMatcher();
         $parser = new RegexRouteParser();
 
-        $route = new Route('get', '/', schemes: 'https');
+        $route = RouteBuilder::get('/')->scheme('https')->build();
         $request = new Request('get', '/', '', 'http');
         $request->scheme = 'HTTP';
         $route = $parser->parse([$route])[0];
@@ -218,7 +220,7 @@ class RegexRouteMatcherTest extends TestCase
         ];
 
         foreach ($valid as $routePath => $props) {
-            $route = new Route('get', $routePath);
+            $route = RouteBuilder::get($routePath)->build();
             $request = new Request('get', $props['path'], '', '');
             $route = $parser->parse([$route])[0];
 
@@ -227,7 +229,7 @@ class RegexRouteMatcherTest extends TestCase
         }
 
         foreach ($defaults as $routePath => $props) {
-            $route = new Route('get', $routePath, defaults: $props['defaults']);
+            $route = RouteBuilder::get($routePath)->default($props['defaults'])->build();
             $request = new Request('get', $props['path'], '', '');
             $route = $parser->parse([$route])[0];
 
@@ -241,11 +243,12 @@ class RegexRouteMatcherTest extends TestCase
         $matcher = new RegexRouteMatcher();
         $parser = new RegexRouteParser();
 
-        $route = (new Route(['get', 'post'], '/{?opt}/{var}/{*wc}'))
+        $route = RouteBuilder::match(['get', 'post'], '/{?opt}/{var}/{*wc}')
             ->host('api.host.com')
             ->scheme('http')
             ->constraint(['var' => '\d+'])
-            ->default(['opt' => 'optional']);
+            ->default(['opt' => 'optional'])
+            ->build();
 
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_SERVER['REQUEST_URI'] = '/123456/wild/cards';
@@ -261,5 +264,22 @@ class RegexRouteMatcherTest extends TestCase
             ['var' => '123456', 'opt' => 'optional', 'wc' => ['wild', 'cards']],
             $route->parsedParameters
         );
+    }
+
+    public function test_it_throws_an_exception_on_invalid_constraint()
+    {
+        $route = RouteBuilder::get('/')
+            ->constraint(CompiledRouteCollection::class, 'some-value')
+            ->build();
+
+        $matcher = new RegexRouteMatcher();
+        $parser = new RegexRouteParser();
+
+        $request = new Request('get', '/', '', '');
+        $route = $parser->parse([$route])[0];
+
+        $this->expectException(RuntimeException::class);
+
+        $matcher->matches($route, $request);
     }
 }

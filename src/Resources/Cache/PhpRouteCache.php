@@ -30,12 +30,7 @@ final class PhpRouteCache implements RouteCacheInterface
      */
     public function get(): array
     {
-        if (! file_exists($this->file)) {
-            return [];
-        }
-
-        if (false === $routes = file_get_contents($this->file)) {
-            //throw new ErrorException('Failed fetching routes from PHP file cache.');
+        if (! file_exists($this->file) || false === $routes = file_get_contents($this->file)) {
             return [];
         }
 
