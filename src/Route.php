@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace LukasJankowski\Routing;
 
-use LukasJankowski\Routing\Constraints\HostRouteConstraint;
-use LukasJankowski\Routing\Constraints\MethodRouteConstraint;
-use LukasJankowski\Routing\Constraints\SchemeRouteConstraint;
-use LukasJankowski\Routing\Constraints\SegmentRouteConstraint;
+use LukasJankowski\Routing\Constraints\HostConstraint;
+use LukasJankowski\Routing\Constraints\MethodConstraint;
+use LukasJankowski\Routing\Constraints\SchemeConstraint;
+use LukasJankowski\Routing\Constraints\SegmentConstraint;
 use Serializable;
 
 final class Route implements Serializable
@@ -63,7 +63,7 @@ final class Route implements Serializable
      */
     public function getMethods(): array
     {
-        return $this->getConstraints(MethodRouteConstraint::class);
+        return $this->getConstraints(MethodConstraint::class);
     }
 
     /**
@@ -95,7 +95,7 @@ final class Route implements Serializable
      */
     public function getHost(): ?string
     {
-        return $this->getConstraints(HostRouteConstraint::class);
+        return $this->getConstraints(HostConstraint::class);
     }
 
     /**
@@ -103,7 +103,7 @@ final class Route implements Serializable
      */
     public function getSchemes(): array
     {
-        return $this->getConstraints(SchemeRouteConstraint::class);
+        return $this->getConstraints(SchemeConstraint::class);
     }
 
     /**
@@ -135,6 +135,6 @@ final class Route implements Serializable
      */
     public function getSegmentConstraints(): array
     {
-        return $this->getConstraints(SegmentRouteConstraint::class);
+        return $this->getConstraints(SegmentConstraint::class);
     }
 }

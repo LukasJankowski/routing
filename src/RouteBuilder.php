@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace LukasJankowski\Routing;
 
-use LukasJankowski\Routing\Constraints\HostRouteConstraint;
-use LukasJankowski\Routing\Constraints\MethodRouteConstraint;
-use LukasJankowski\Routing\Constraints\SchemeRouteConstraint;
-use LukasJankowski\Routing\Constraints\SegmentRouteConstraint;
+use LukasJankowski\Routing\Constraints\HostConstraint;
+use LukasJankowski\Routing\Constraints\MethodConstraint;
+use LukasJankowski\Routing\Constraints\SchemeConstraint;
+use LukasJankowski\Routing\Constraints\SegmentConstraint;
 use LukasJankowski\Routing\Utilities\Method;
 use LukasJankowski\Routing\Utilities\Path;
 use LukasJankowski\Routing\Utilities\Scheme;
@@ -31,8 +31,8 @@ final class RouteBuilder
      */
     private function __construct(array $methods, string $path, private mixed $action = null)
     {
-        $this->constraint(MethodRouteConstraint::class, Method::normalize($methods));
-        $this->constraint(SegmentRouteConstraint::class, []);
+        $this->constraint(MethodConstraint::class, Method::normalize($methods));
+        $this->constraint(SegmentConstraint::class, []);
 
         $this->path = Path::normalize($path);
     }
@@ -154,7 +154,7 @@ final class RouteBuilder
      */
     public function scheme(array|string $schemes): self
     {
-        $this->constraint(SchemeRouteConstraint::class, (array) Scheme::normalize($schemes));
+        $this->constraint(SchemeConstraint::class, (array) Scheme::normalize($schemes));
 
         return $this;
     }
@@ -204,7 +204,7 @@ final class RouteBuilder
      */
     public function host(string $host): self
     {
-        $this->constraint(HostRouteConstraint::class, $host);
+        $this->constraint(HostConstraint::class, $host);
 
         return $this;
     }
@@ -226,8 +226,8 @@ final class RouteBuilder
     {
         $config = ['name' => $constraint, 'pattern' => $pattern];
 
-        $this->constraints[SegmentRouteConstraint::class] = array_merge(
-            $this->constraints[SegmentRouteConstraint::class],
+        $this->constraints[SegmentConstraint::class] = array_merge(
+            $this->constraints[SegmentConstraint::class],
             [$config]
         );
     }

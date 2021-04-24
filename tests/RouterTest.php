@@ -1,11 +1,11 @@
 <?php
 
-use LukasJankowski\Routing\Handlers\DefaultRouteHandler;
-use LukasJankowski\Routing\Handlers\Fake\FakeRouteMatcher;
-use LukasJankowski\Routing\Handlers\Fake\FakeRouteParser;
+use LukasJankowski\Routing\Handlers\DefaultHandler;
+use LukasJankowski\Routing\Handlers\Fake\FakeMatcher;
+use LukasJankowski\Routing\Handlers\Fake\FakeParser;
 use LukasJankowski\Routing\Request;
 use LukasJankowski\Routing\RouteBuilder;
-use LukasJankowski\Routing\RouteCollection;
+use LukasJankowski\Routing\Collection;
 use LukasJankowski\Routing\RouteMatch;
 use LukasJankowski\Routing\Router;
 use PHPUnit\Framework\TestCase;
@@ -52,8 +52,8 @@ class RouterTest extends TestCase
 
     public function test_it_can_add_collections()
     {
-        $collection = new RouteCollection(
-            new DefaultRouteHandler(new FakeRouteMatcher(), new FakeRouteParser())
+        $collection = new Collection(
+            new DefaultHandler(new FakeMatcher(), new FakeParser())
         );
 
         $router = new Router();
@@ -66,7 +66,7 @@ class RouterTest extends TestCase
 
     public function test_it_can_match_against_multiple_collections()
     {
-        $stub = $this->createMock(RouteCollection::class);
+        $stub = $this->createMock(Collection::class);
         $stub->method('match')
             ->willReturn(RouteBuilder::get('/')->build());
 

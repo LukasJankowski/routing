@@ -1,10 +1,10 @@
 <?php
 
-use LukasJankowski\Routing\Constraints\FakeRouteConstraint;
-use LukasJankowski\Routing\Constraints\HostRouteConstraint;
-use LukasJankowski\Routing\Constraints\MethodRouteConstraint;
-use LukasJankowski\Routing\Constraints\SchemeRouteConstraint;
-use LukasJankowski\Routing\Constraints\SegmentRouteConstraint;
+use LukasJankowski\Routing\Constraints\FakeConstraint;
+use LukasJankowski\Routing\Constraints\HostConstraint;
+use LukasJankowski\Routing\Constraints\MethodConstraint;
+use LukasJankowski\Routing\Constraints\SchemeConstraint;
+use LukasJankowski\Routing\Constraints\SegmentConstraint;
 use LukasJankowski\Routing\RouteBuilder;
 use PHPUnit\Framework\TestCase;
 
@@ -30,10 +30,10 @@ class RouteBuilderTest extends TestCase
         $this->assertEquals(['HTTPS'], $route->getSchemes());
         $this->assertEquals(
             [
-                MethodRouteConstraint::class => ['GET'],
-                HostRouteConstraint::class => 'host.com',
-                SchemeRouteConstraint::class => ['HTTPS'],
-                SegmentRouteConstraint::class => [['name' => 'to', 'pattern' => '\d+']]
+                MethodConstraint::class => ['GET'],
+                HostConstraint::class => 'host.com',
+                SchemeConstraint::class => ['HTTPS'],
+                SegmentConstraint::class => [['name' => 'to', 'pattern' => '\d+']]
             ],
             $route->getConstraints()
         );
@@ -62,11 +62,11 @@ class RouteBuilderTest extends TestCase
     public function test_can_add_custom_constraints()
     {
         $route = RouteBuilder::get('/')
-            ->constraint(FakeRouteConstraint::class, 'any-value')
-            ->constraint([FakeRouteConstraint::class => ['another-value']])
+            ->constraint(FakeConstraint::class, 'any-value')
+            ->constraint([FakeConstraint::class => ['another-value']])
             ->build();
 
-        $this->assertEquals(['another-value'], $route->getConstraints(FakeRouteConstraint::class));
+        $this->assertEquals(['another-value'], $route->getConstraints(FakeConstraint::class));
     }
 
     public function test_it_can_construct_routes_with_methods_as_arguments()

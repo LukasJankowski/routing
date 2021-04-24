@@ -10,7 +10,7 @@ class Router
 
     private const SPECIFIC_SEGMENT_PATTERN = '#\1[\3\4]*?%s(?:\:([^\/]+))?\2#';
 
-    /** @var array<RouteCollection> */
+    /** @var array<Collection> */
     private array $collections = [];
 
     /**
@@ -30,7 +30,7 @@ class Router
     /**
      * Add many collections.
      *
-     * @param array<RouteCollection> $collections
+     * @param array<Collection> $collections
      */
     public function addMany(array $collections): void
     {
@@ -40,7 +40,7 @@ class Router
     /**
      * Add a collection.
      */
-    public function add(RouteCollection $collection): void
+    public function add(Collection $collection): void
     {
         $this->collections[] = $collection;
     }
