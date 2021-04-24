@@ -73,15 +73,15 @@ include:
     
 - PSR Caching Contracts
 - RouteMatch object for matches &check;
-- Mass matching via collection groups
+- Mass matching via collection groups &check;
 - Compatible with SymfonyRequests / PSR7 Requests &check;
 - Code Improvements / Restructurings
-    - Better separation of concerns
-    - Cleaner classes
+    - Better separation of concerns (&check;)
+    - Cleaner classes (&check;)
     - Utility class reworks
     - Better unit tests / less duplication
     
-- Routing Factories (&check;)
+- Routing Factories &check;
 - Compile Cache (&check;)
 
 
