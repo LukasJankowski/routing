@@ -90,4 +90,16 @@ class Router
     {
         return '?';
     }
+
+    public static function makeMatch(Route $route, Request $request): RouteMatch
+    {
+        return new RouteMatch(
+            $request->path,
+            $route->getPath(),
+            $route->getAction(),
+            $route->getName(),
+            $route->getMiddlewares(),
+            $route->parsedParameters
+        );
+    }
 }

@@ -25,7 +25,7 @@ final class CompiledRouteCollection extends AbstractRouteCollection
     /**
      * Match the routes.
      */
-    public function match(Request $request): bool
+    public function match(Request $request): false|RouteMatch
     {
         foreach ($this->routes as $route) {
             if ($route->parsedPath === null) {
@@ -33,7 +33,7 @@ final class CompiledRouteCollection extends AbstractRouteCollection
             }
 
             if ($this->matcher->matches($route, $request)) {
-                return true;
+                return Router::makeMatch($route, $request);
             }
         }
 

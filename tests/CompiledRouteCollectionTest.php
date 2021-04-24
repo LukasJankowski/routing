@@ -5,6 +5,7 @@ use LukasJankowski\Routing\Matchers\FakeRouteMatcher;
 use LukasJankowski\Routing\Request;
 use LukasJankowski\Routing\Resources\Cache\ArrayRouteCache;
 use LukasJankowski\Routing\Route;
+use LukasJankowski\Routing\RouteMatch;
 use PHPUnit\Framework\TestCase;
 
 class CompiledRouteCollectionTest extends TestCase
@@ -107,7 +108,7 @@ class CompiledRouteCollectionTest extends TestCase
         $route->parsedPath = true;
 
         $collection = new CompiledRouteCollection(new FakeRouteMatcher(), [$route, $route]);
-        $this->assertTrue($collection->match(new Request('get', '/test', '', '')));
+        $this->assertInstanceOf(RouteMatch::class, $collection->match(new Request('get', '/test', '', '')));
 
         $collection = new CompiledRouteCollection(new FakeRouteMatcher(),);
         $this->assertFalse($collection->match(new Request('get', '/test', '', '')));
