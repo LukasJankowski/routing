@@ -4,6 +4,7 @@ namespace Handlers\Regex;
 
 use LukasJankowski\Routing\Handlers\Regex\RegexParser;
 use LukasJankowski\Routing\Handlers\ParserInterface;
+use LukasJankowski\Routing\PatternRegistry;
 use LukasJankowski\Routing\Route;
 use LukasJankowski\Routing\RouteBuilder;
 use PHPUnit\Framework\TestCase;
@@ -21,6 +22,10 @@ class RegexParserTest extends TestCase
     public function test_it_can_parse_routes()
     {
         $parser = new RegexParser();
+
+        PatternRegistry::pattern('year', '\d{4}');
+        PatternRegistry::pattern('month', '\d{2}');
+        PatternRegistry::pattern('day', '\d{2}');
 
         $paths = [
             '/' => '#^/?$#',
@@ -60,6 +65,8 @@ class RegexParserTest extends TestCase
             '/combo/{?opt}/{*wildcard}/{var}' => '#^/?combo(?:/(?<opt>[^/]+))?(?:/(?<wildcard>.+))(?:/(?<var>[^/]+))$#',
             '/combo/{?opt}/{?*wildcard}/{?var}' => '#^/?combo(?:/(?<opt>[^/]+))?(?:/(?<wildcard>.+))?(?:/(?<var>[^/]+))?$#',
             '/combo/{?*wc}/static/{var}/{?opt}' => '#^/?combo(?:/(?<wc>.+))?/static(?:/(?<var>[^/]+))(?:/(?<opt>[^/]+))?$#',
+
+            '/{year:year}/{month:\d{2}}/{day:day}' => '#^/?(?:/(?<year>\d{4}))(?:/(?<month>\d{2}))(?:/(?<day>\d{2}))$#',
         ];
 
         foreach ($paths as $path => $expected) {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LukasJankowski\Routing\Handlers\Regex;
 
 use LukasJankowski\Routing\Handlers\ParserInterface;
+use LukasJankowski\Routing\PatternRegistry;
 use LukasJankowski\Routing\Route;
 use LukasJankowski\Routing\Router;
 use LukasJankowski\Routing\Utilities\Path;
@@ -66,6 +67,11 @@ final class RegexParser implements ParserInterface
     private function ensurePattern(string $segment, array $dynamic, array $constraints): string
     {
         $pattern = $dynamic['pattern'] ?: $this->patternFromConstraints($dynamic['name'], $constraints);
+
+        $pattern = $pattern === null
+            ? null
+            : PatternRegistry::getPattern($pattern) ?? $pattern;
+
         $pattern ??= Router::dynamicFallbackPattern();
 
         return sprintf(

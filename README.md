@@ -59,7 +59,7 @@ include:
     - Regex Parser / Matcher &check;
     
 - Multitude of constraints
-    - Common Patterns
+    - Common Patterns &check;
     - Fake &check;
     - Segment Defaults &check;
     - Methods &check;
