@@ -34,6 +34,7 @@ class PathTest extends TestCase
 
         $this->assertEquals([], Path::extractDynamicSegments('/static/only'));
         $this->assertEquals([], Path::extractDynamicSegments('/'));
+        $this->assertEquals([], Path::extractDynamicSegments(''));
     }
 
     public function test_it_checks_if_the_segment_is_optional()

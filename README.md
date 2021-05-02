@@ -54,8 +54,7 @@ include:
     - Plain PHP Files &check;
     
 - Multitude of parsers / matchers
-    - Tree Parser / Matcher
-    - Static Parser / Matcher (&check;)
+    - Static Parser / Matcher &check;
     - Fake Parser / Matcher &check;
     - Regex Parser / Matcher &check;
     
@@ -69,7 +68,6 @@ include:
 
 - Named routes / LinkBuilder / Redirects
 - Route groups (like Laravel) &check;
-    - Named groups &cross;
     
 - PSR Caching Contracts
 - RouteMatch object for matches &check;
