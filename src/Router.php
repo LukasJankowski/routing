@@ -16,7 +16,7 @@ class Router
     /**
      * Resolve the request against all collections.
      */
-    public function resolve(Request $request): false|RouteMatch
+    public function resolve(Request $request): ?RouteMatch
     {
         foreach ($this->collections as $collection) {
             if ($route = $collection->match($request)) {
@@ -24,7 +24,7 @@ class Router
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -147,5 +147,19 @@ class Router
     public function getCollections(): array
     {
         return $this->collections;
+    }
+
+    /**
+     * Filter the routes by name.
+     */
+    public function getRouteByName(string $name): ?Route
+    {
+        foreach ($this->collections as $collection) {
+            if ($route = $collection->getRouteByName($name)) {
+                return $route;
+            }
+        }
+
+        return null;
     }
 }

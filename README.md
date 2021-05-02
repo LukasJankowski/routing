@@ -66,10 +66,9 @@ include:
     - Hosts &check;
     - Schemes &check;
 
-- Named routes / LinkBuilder / Redirects
+- Named routes (&check;) / LinkBuilder / Redirects
 - Route groups (like Laravel) &check;
     
-- PSR Caching Contracts
 - RouteMatch object for matches &check;
 - Mass matching via collection groups &check;
 - Compatible with SymfonyRequests / PSR7 Requests &check;

@@ -184,4 +184,17 @@ class CollectionTest extends TestCase
             )
         );
     }
+
+    public function test_can_get_route_by_name()
+    {
+        $route = RouteBuilder::get('/')->name('route.name')->build();
+
+        $collection = new Collection(
+            new DefaultHandler(new FakeMatcher(), new FakeParser())
+        );
+        $collection->add($route);
+
+        $this->assertEquals($route, $collection->getRouteByName('route.name'));
+        $this->assertNull($collection->getRouteByName('another.name'));
+    }
 }

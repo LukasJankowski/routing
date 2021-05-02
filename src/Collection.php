@@ -111,6 +111,20 @@ class Collection implements IteratorAggregate, Countable
     }
 
     /**
+     * Filter the routes by name.
+     */
+    public function getRouteByName(string $name): ?Route
+    {
+        foreach ($this->routes as $route) {
+            if ($route->getName() === $name) {
+                return $route;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @inheritDoc
      */
     public function getIterator(): ArrayIterator

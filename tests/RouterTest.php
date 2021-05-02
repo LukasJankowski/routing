@@ -80,6 +80,22 @@ class RouterTest extends TestCase
 
         $router = new Router();
 
-        $this->assertFalse($router->resolve($request));
+        $this->assertNull($router->resolve($request));
+    }
+
+    public function test_can_get_route_by_name()
+    {
+        $route = RouteBuilder::get('/')->name('route.name')->build();
+
+        $collection = new Collection(
+            new DefaultHandler(new FakeMatcher(), new FakeParser())
+        );
+        $collection->add($route);
+
+        $router = new Router();
+        $router->add($collection);
+
+        $this->assertEquals($route, $router->getRouteByName('route.name'));
+        $this->assertNull($router->getRouteByName('another.name'));
     }
 }
