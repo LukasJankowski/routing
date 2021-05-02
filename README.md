@@ -36,10 +36,8 @@ It will be expanded upon greatly. Some planned features
 include:
 
 - Multitude of route resources
-    - YAML
+    - YAML &check;
     - Database
-    - Annotations
-    - Adapters (?)
     - Fake &check;
     - Memory &check;
     - Attributes &check;
