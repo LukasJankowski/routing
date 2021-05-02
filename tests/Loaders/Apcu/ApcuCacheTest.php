@@ -11,9 +11,12 @@ class ApcuCacheTest extends TestCase
 {
     public function test_it_throws_an_exception_if_extension_is_not_loaded()
     {
-        $this->expectException(RuntimeException::class);
-
-        new ApcuCache('key');
+        if (! extension_loaded('apcu')) {
+            $this->expectException(RuntimeException::class);
+            new ApcuCache('key');
+        } else {
+            $this->markTestSkipped();
+        }
     }
 
     public function test_it_returns_an_empty_array_if_no_cache_exists()
@@ -22,7 +25,7 @@ class ApcuCacheTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $cache = new ApcuCache('not-existant');
+        $cache = new ApcuCache('not-existent');
         $this->assertEquals([], $cache->get());
     }
 

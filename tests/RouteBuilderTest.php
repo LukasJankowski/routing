@@ -114,9 +114,9 @@ class RouteBuilderTest extends TestCase
                     ->middleware('middleware1')
                     ->build();
 
-                $this->assertEquals('/another/prefix/path1', $route1->getPath());
-                $this->assertEquals('another.prefix.name1', $route1->getName());
-                $this->assertEquals(['another', 'prefix', 'middleware1'], $route1->getMiddlewares());
+                $this->assertEquals('/prefix/another/path1', $route1->getPath());
+                $this->assertEquals('prefix.another.name1', $route1->getName());
+                $this->assertEquals(['prefix', 'another', 'middleware1'], $route1->getMiddlewares());
             });
 
             $route2 = RouteBuilder::get('/path2')

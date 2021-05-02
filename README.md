@@ -46,7 +46,7 @@ include:
     - Plain PHP Files &check;
     
 - Multitude of route caches
-    - Redis
+    - Redis &check;
     - Database
     - Fake &check;
     - APCu &check;

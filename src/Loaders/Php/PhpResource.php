@@ -26,6 +26,8 @@ class PhpResource implements ResourceInterface
 
     /**
      * @inheritDoc
+     *
+     * @throws ErrorException
      */
     public function get(): array
     {

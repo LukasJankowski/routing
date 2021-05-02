@@ -1,0 +1,33 @@
+# Simple routes by path keys
+/:
+  method: get
+
+/path/{var}/{*?wc}:
+  method: [get, post]
+  action: ControllerClass@method
+  name: route.name
+  constraint:
+    var: \d+
+  middleware: ['test_middleware', 'test_middleware_2']
+  default:
+    wc: ['some', 'segments']
+
+# Grouped routes by numeric keys // Symfony Yaml does not support mixed numeric / string keys
+0:
+  path: /prefix
+  name: prefix.
+  middleware: prefix_middleware
+  group:
+    /grouped:
+      method: [put, patch]
+      name: grouped
+      middleware: grouped_middleware
+
+    /another:
+      method: get
+
+    0:
+      path: /nested
+      group:
+        /path:
+          method: get

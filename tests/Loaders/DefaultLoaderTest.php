@@ -8,9 +8,11 @@ use LukasJankowski\Routing\Loaders\DefaultLoader;
 use LukasJankowski\Routing\Loaders\Fake\FakeCache;
 use LukasJankowski\Routing\Loaders\Fake\FakeResource;
 use LukasJankowski\Routing\Loaders\LoaderInterface;
+use LukasJankowski\Routing\Loaders\Php\PhpCache;
 use LukasJankowski\Routing\Loaders\ResourceInterface;
 use LukasJankowski\Routing\Loaders\CacheInterface;
 use LukasJankowski\Routing\Route;
+use LukasJankowski\Routing\RouteBuilder;
 use PHPUnit\Framework\TestCase;
 
 class DefaultLoaderTest extends TestCase
@@ -58,6 +60,17 @@ class DefaultLoaderTest extends TestCase
         $loader->set([$route]);
 
         $this->assertEquals([$route], $cache->get());
+    }
+
+    public function test_it_throws_an_exception_when_trying_to_store_a_closure_in_cache()
+    {
+        $route = RouteBuilder::get('/', function () {})->build();
+
+        $cache = new PhpCache(__DIR__ . '/../fixtures/php_cache_invalid.cache');
+
+        $this->expectExceptionMessage("Serialization of 'Closure' is not allowed");
+
+        $cache->set([$route]);
     }
 }
 

@@ -1,0 +1,9 @@
+# Simple routes by path keys
+/:
+  method: get
+
+# Mixing of numeric / string keys is not allowed
+-
+  path: /prefix
+  name: prefix.
+  middleware: prefix_middleware

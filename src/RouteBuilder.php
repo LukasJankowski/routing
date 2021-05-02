@@ -108,7 +108,7 @@ final class RouteBuilder
         return new self($methods, $path, $action);
     }
 
-    public static function group(array $properties, \Closure $closure): void
+    public static function group(array $properties, callable $closure): void
     {
         self::$stack[] = $properties;
 
@@ -252,7 +252,7 @@ final class RouteBuilder
      */
     private function applyStacks(): void
     {
-        foreach (self::$stack as $props) {
+        foreach (array_reverse(self::$stack) as $props) {
             $path = $props['path'] ?? null;
             $name = $props['name'] ?? null;
             $middleware = $props['middleware'] ?? null;

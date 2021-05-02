@@ -15,8 +15,10 @@ final class ApcuCache implements CacheInterface
      */
     public function __construct(private string $key)
     {
-        if (! extension_loaded('apcu')) {
-            throw new RuntimeException('Extension APCu must be loaded.');
+        // apc.enabled = 1
+        // apc.enable_cli = 1 // for testing purposes
+        if (! extension_loaded('apcu') || ! apcu_enabled()) {
+            throw new RuntimeException('Extension APCu must be loaded/enabled.');
         }
     }
 
