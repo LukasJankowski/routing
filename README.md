@@ -66,7 +66,7 @@ include:
     - Hosts &check;
     - Schemes &check;
 
-- Named routes (&check;) / LinkBuilder / Redirects
+- Named routes &check; / LinkBuilder &check;
 - Route groups (like Laravel) &check;
     
 - RouteMatch object for matches &check;
