@@ -34,7 +34,7 @@ final class RegexMatcher extends AbstractMatcher
      */
     public function matches(Route $route, Request $request): bool
     {
-        if (!$this->matchPath($route, $request)) {
+        if (! $this->matchPath($route, $request)) {
             return false;
         }
 
@@ -51,7 +51,7 @@ final class RegexMatcher extends AbstractMatcher
         $matches = [];
         $result = preg_match($route->getPrepared(), $request->path, $matches, PREG_UNMATCHED_AS_NULL);
 
-        if (!$result || empty($matches)) {
+        if (! $result || empty($matches)) {
             return false;
         }
 
