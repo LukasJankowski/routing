@@ -12,6 +12,13 @@ use RuntimeException;
 
 class YamlResourceTest extends TestCase
 {
+    private function checkPackage(): void
+    {
+        if (! InstalledVersions::isInstalled('symfony/yaml')) {
+            $this->markTestSkipped();
+        }
+    }
+
     public function test_it_throws_an_exception_if_package_not_installed()
     {
         if (! InstalledVersions::isInstalled('symfony/yaml')) {
@@ -24,6 +31,8 @@ class YamlResourceTest extends TestCase
 
     public function test_it_can_retrieve_the_routes_from_resource()
     {
+        $this->checkPackage();
+
         $resource = new YamlResource(__DIR__ . '/../../fixtures/routes.yml');
 
         $this->assertEquals(
@@ -54,6 +63,8 @@ class YamlResourceTest extends TestCase
 
     public function test_it_throws_an_exception_on_invalid_file()
     {
+        $this->checkPackage();
+
         $this->expectException(InvalidArgumentException::class);
 
         new YamlResource('not_found');
@@ -61,6 +72,8 @@ class YamlResourceTest extends TestCase
 
     public function test_it_throws_an_exception_if_no_array_is_returned()
     {
+        $this->checkPackage();
+
         $this->expectException(ErrorException::class);
 
         $resource = new YamlResource(__DIR__ . '/../../fixtures/invalid_routes.yml');

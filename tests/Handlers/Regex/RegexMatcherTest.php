@@ -140,7 +140,6 @@ class RegexMatcherTest extends TestCase
         $this->expectExceptionMessage('constraint.host.mismatch');
 
         $this->matcher->matches($route, $request);
-
     }
 
     public function test_it_throws_exception_on_bad_scheme()

@@ -1,5 +1,7 @@
 <?php
 
+use LukasJankowski\Routing\Collection;
+use LukasJankowski\Routing\CollectionBuilder;
 use LukasJankowski\Routing\Handlers\DefaultHandler;
 use LukasJankowski\Routing\Handlers\Fake\FakeMatcher;
 use LukasJankowski\Routing\Handlers\Fake\FakeParser;
@@ -12,8 +14,6 @@ use LukasJankowski\Routing\Loaders\Array\ArrayResource;
 use LukasJankowski\Routing\Loaders\DefaultLoader;
 use LukasJankowski\Routing\Loaders\Fake\FakeCache;
 use LukasJankowski\Routing\Loaders\Fake\FakeResource;
-use LukasJankowski\Routing\Collection;
-use LukasJankowski\Routing\CollectionBuilder;
 use PHPUnit\Framework\TestCase;
 
 class CollectionBuilderTest extends TestCase

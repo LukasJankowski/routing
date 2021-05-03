@@ -1,5 +1,6 @@
 <?php
 
+use LukasJankowski\Routing\Collection;
 use LukasJankowski\Routing\Handlers\DefaultHandler;
 use LukasJankowski\Routing\Handlers\Fake\FakeMatcher;
 use LukasJankowski\Routing\Handlers\Fake\FakeParser;
@@ -9,7 +10,6 @@ use LukasJankowski\Routing\Loaders\DefaultLoader;
 use LukasJankowski\Routing\Request;
 use LukasJankowski\Routing\Route;
 use LukasJankowski\Routing\RouteBuilder;
-use LukasJankowski\Routing\Collection;
 use PHPUnit\Framework\TestCase;
 
 class CollectionTest extends TestCase

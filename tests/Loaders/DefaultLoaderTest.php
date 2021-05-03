@@ -6,7 +6,6 @@ use LukasJankowski\Routing\Loaders\Array\ArrayCache;
 use LukasJankowski\Routing\Loaders\Array\ArrayResource;
 use LukasJankowski\Routing\Loaders\DefaultLoader;
 use LukasJankowski\Routing\Loaders\Php\PhpCache;
-use LukasJankowski\Routing\Route;
 use LukasJankowski\Routing\RouteBuilder;
 use PHPUnit\Framework\TestCase;
 
@@ -45,7 +44,8 @@ class DefaultLoaderTest extends TestCase
 
     public function test_it_throws_an_exception_when_trying_to_store_a_closure_in_cache()
     {
-        $route = [RouteBuilder::get('/', function () {})->build()];
+        $route = [RouteBuilder::get('/', function () {
+        })->build()];
 
         $cache = new PhpCache(__DIR__ . '/../fixtures/php_cache_invalid.cache');
 
@@ -54,4 +54,3 @@ class DefaultLoaderTest extends TestCase
         $cache->set($route);
     }
 }
-

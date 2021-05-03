@@ -2,6 +2,7 @@
 
 namespace Loaders\Redis;
 
+use Composer\InstalledVersions;
 use LukasJankowski\Routing\Loaders\Redis\RedisCache;
 use LukasJankowski\Routing\RouteBuilder;
 use PHPUnit\Framework\TestCase;
@@ -9,9 +10,16 @@ use Predis\Client;
 
 class RedisCacheTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        if (! InstalledVersions::isInstalled('predis/predis')) {
+            $this->markTestSkipped();
+        }
+    }
+
     public function test_it_returns_an_empty_array_if_no_cache_exists()
     {
-        $cache = new RedisCache(new Client(),'not-existent');
+        $cache = new RedisCache(new Client(), 'not-existent');
         $this->assertEquals([], $cache->get());
     }
 

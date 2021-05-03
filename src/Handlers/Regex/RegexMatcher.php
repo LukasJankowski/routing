@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace LukasJankowski\Routing\Handlers\Regex;
 
+use const ARRAY_FILTER_USE_KEY;
 use LukasJankowski\Routing\Constraints\SegmentConstraint;
 use LukasJankowski\Routing\Exceptions\BadRouteException;
 use LukasJankowski\Routing\Handlers\AbstractMatcher;
 use LukasJankowski\Routing\Request;
 use LukasJankowski\Routing\Route;
 use LukasJankowski\Routing\Router;
-use LukasJankowski\Routing\Utilities\Path;
 
-use const ARRAY_FILTER_USE_KEY;
+use LukasJankowski\Routing\Utilities\Path;
 use const PREG_UNMATCHED_AS_NULL;
 
 final class RegexMatcher extends AbstractMatcher

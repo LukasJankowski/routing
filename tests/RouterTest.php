@@ -1,11 +1,11 @@
 <?php
 
+use LukasJankowski\Routing\Collection;
 use LukasJankowski\Routing\Handlers\DefaultHandler;
 use LukasJankowski\Routing\Handlers\Fake\FakeMatcher;
 use LukasJankowski\Routing\Handlers\Fake\FakeParser;
 use LukasJankowski\Routing\Request;
 use LukasJankowski\Routing\RouteBuilder;
-use LukasJankowski\Routing\Collection;
 use LukasJankowski\Routing\RouteMatch;
 use LukasJankowski\Routing\Router;
 use PHPUnit\Framework\TestCase;

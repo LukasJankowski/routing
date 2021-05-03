@@ -1,9 +1,6 @@
 <?php
 
-use LukasJankowski\Routing\Request;
-use LukasJankowski\Routing\RouteBuilder;
 use LukasJankowski\Routing\RouteMatch;
-use LukasJankowski\Routing\Router;
 use PHPUnit\Framework\TestCase;
 
 class RouteMatchTest extends TestCase

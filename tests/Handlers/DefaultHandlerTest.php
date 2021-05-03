@@ -6,7 +6,6 @@ use LukasJankowski\Routing\Handlers\DefaultHandler;
 use LukasJankowski\Routing\Handlers\Fake\FakeMatcher;
 use LukasJankowski\Routing\Handlers\Fake\FakeParser;
 use LukasJankowski\Routing\Request;
-use LukasJankowski\Routing\Route;
 use LukasJankowski\Routing\RouteBuilder;
 use PHPUnit\Framework\TestCase;
 
@@ -31,4 +30,3 @@ class DefaultHandlerTest extends TestCase
         $this->assertTrue($handler->matches($route, $request));
     }
 }
-

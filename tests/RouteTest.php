@@ -75,7 +75,8 @@ class RouteTest extends TestCase
 
     public function test_it_throws_an_exception_when_serializing_closures()
     {
-        $route = new Route('/{var}/path', function() {});
+        $route = new Route('/{var}/path', function () {
+        });
 
         $this->expectExceptionMessage("Serialization of 'Closure' is not allowed");
 

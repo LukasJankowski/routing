@@ -92,7 +92,7 @@ class LinkTest extends TestCase
      */
     public function test_it_can_create_links($path, $expected, $params)
     {
-        $this->assertEquals($expected, Link::to(RouteBuilder::get($path)->build(),$params));
+        $this->assertEquals($expected, Link::to(RouteBuilder::get($path)->build(), $params));
     }
 
     public function test_it_fails_with_invalid_parameters()
