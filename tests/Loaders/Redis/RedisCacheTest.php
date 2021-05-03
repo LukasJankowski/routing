@@ -25,7 +25,6 @@ class RedisCacheTest extends TestCase
         ];
 
         $cache = new RedisCache(new Client(), 'route-key');
-
         $cache->set($routes);
 
         $this->assertEquals($routes, $cache->get());

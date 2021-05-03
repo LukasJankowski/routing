@@ -4,21 +4,11 @@ namespace Constraints;
 
 use LukasJankowski\Routing\Constraints\MethodConstraint;
 use LukasJankowski\Routing\Request;
-use LukasJankowski\Routing\Route;
 use LukasJankowski\Routing\RouteBuilder;
 use PHPUnit\Framework\TestCase;
 
 class MethodConstraintTest extends TestCase
 {
-    public function test_it_can_be_instantiated()
-    {
-        $constraint = new MethodConstraint();
-        $constraint->setRequest(new Request('get', '/', '', ''));
-        $constraint->setRoute(new Route('get', '/'));
-
-        $this->assertInstanceOf(MethodConstraint::class, $constraint);
-    }
-
     public function test_it_returns_an_error_message()
     {
         $constraint = new MethodConstraint();
@@ -33,42 +23,54 @@ class MethodConstraintTest extends TestCase
         $this->assertIsInt($constraint->getErrorCode());
     }
 
-    public function test_it_validates_the_scheme()
+    public function provideValidMethods(): array
+    {
+        return [
+            ['request' => 'get', 'route' => 'get'],
+            ['request' => 'post', 'route' => 'post'],
+            ['request' => 'put', 'route' => ['post', 'put', 'patch']],
+            ['request' => 'head', 'route' => ['head']],
+        ];
+    }
+
+    public function provideInvalidMethods(): array
+    {
+        return [
+            ['request' => 'get', 'route' => 'post'],
+            ['request' => 'post', 'route' => 'patch'],
+            ['request' => 'put', 'route' => 'get'],
+            ['request' => 'patch', 'route' => ['post', 'get']],
+            ['request' => 'head', 'route' => ['get']],
+        ];
+    }
+
+    /**
+     * @dataProvider provideValidMethods
+     */
+    public function test_it_validates_methods($requestMethod, $route)
     {
         $constraint = new MethodConstraint();
 
-        $valid = [
-            'get' => 'get',
-            'post' => 'post',
-            'put' => ['post', 'put', 'patch'],
-            'head' => ['head']
-        ];
+        $request = new Request($requestMethod, '/', '', '');
 
-        $invalid = [
-            'get' => 'post',
-            'post' => 'patch',
-            'put' => 'get',
-            'patch' => ['post', 'get'],
-            'head' => ['get'],
-        ];
+        $constraint->setRequest($request);
+        $constraint->setRoute(RouteBuilder::match((array) $route, '/')->build());
 
-        foreach ($valid as $requestMethod => $routeMethod) {
-            $request = new Request($requestMethod, '/', '', '');
+        $this->assertTrue($constraint->validate());
+    }
 
-            $constraint->setRequest($request);
-            $constraint->setRoute(RouteBuilder::match((array) $routeMethod, '/')->build());
+    /**
+     * @dataProvider provideInvalidMethods
+     */
+    public function test_it_validates_invalid_methods($requestMethod, $route)
+    {
+        $constraint = new MethodConstraint();
 
-            $this->assertTrue($constraint->validate());
-        }
+        $request = new Request($requestMethod, '/', '', '');
 
+        $constraint->setRequest($request);
+        $constraint->setRoute(RouteBuilder::match((array) $route, '/')->build());
 
-        foreach ($invalid as $requestMethod => $routeMethod) {
-            $request = new Request($requestMethod, '/', '', '');
-
-            $constraint->setRequest($request);
-            $constraint->setRoute(RouteBuilder::match((array) $routeMethod, '/')->build());
-
-            $this->assertFalse($constraint->validate());
-        }
+        $this->assertFalse($constraint->validate());
     }
 }

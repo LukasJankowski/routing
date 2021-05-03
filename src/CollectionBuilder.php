@@ -8,11 +8,17 @@ use InvalidArgumentException;
 use LukasJankowski\Routing\Handlers\DefaultHandler;
 use LukasJankowski\Routing\Handlers\Fake\FakeMatcher;
 use LukasJankowski\Routing\Handlers\Fake\FakeParser;
+use LukasJankowski\Routing\Handlers\Fixed\FixedMatcher;
+use LukasJankowski\Routing\Handlers\Fixed\FixedParser;
 use LukasJankowski\Routing\Handlers\HandlerInterface;
 use LukasJankowski\Routing\Handlers\Regex\RegexMatcher;
 use LukasJankowski\Routing\Handlers\Regex\RegexParser;
+use LukasJankowski\Routing\Loaders\Array\ArrayCache;
+use LukasJankowski\Routing\Loaders\Array\ArrayResource;
 use LukasJankowski\Routing\Loaders\CacheInterface;
 use LukasJankowski\Routing\Loaders\DefaultLoader;
+use LukasJankowski\Routing\Loaders\Fake\FakeCache;
+use LukasJankowski\Routing\Loaders\Fake\FakeResource;
 use LukasJankowski\Routing\Loaders\LoaderInterface;
 use LukasJankowski\Routing\Loaders\ResourceInterface;
 
@@ -20,7 +26,13 @@ final class CollectionBuilder
 {
     public const HANDLERS = [
         'regex' => [RegexMatcher::class, RegexParser::class],
-        'fake' => [FakeMatcher::class, FakeParser::class]
+        'fake' => [FakeMatcher::class, FakeParser::class],
+        'fixed' => [FixedMatcher::class, FixedParser::class],
+    ];
+
+    public const LOADERS = [
+        'array' => [ArrayCache::class, ArrayResource::class],
+        'fake' => [FakeCache::class, FakeResource::class]
     ];
 
     private HandlerInterface $handler;
@@ -64,9 +76,11 @@ final class CollectionBuilder
     /**
      * Setter.
      */
-    public function loader(LoaderInterface $loader): self
+    public function loader(string|LoaderInterface $loader): self
     {
-        $this->loader = $loader;
+        $this->loader = is_string($loader)
+            ? $this->loaderFromString($loader)
+            : $loader;
 
         return $this;
     }
@@ -116,6 +130,22 @@ final class CollectionBuilder
 
         return new DefaultHandler(
             ...array_map(fn ($class) => new $class(), self::HANDLERS[$handler])
+        );
+    }
+
+    /**
+     * Resolve the loader from string.
+     */
+    private function loaderFromString(string $loader): LoaderInterface
+    {
+        if (! array_key_exists($loader, self::LOADERS)) {
+            throw new InvalidArgumentException(
+                sprintf('Loader "%s" not available.', $loader)
+            );
+        }
+
+        return new DefaultLoader(
+            ...array_map(fn ($class) => new $class(), self::LOADERS[$loader])
         );
     }
 

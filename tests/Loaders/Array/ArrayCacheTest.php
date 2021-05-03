@@ -18,7 +18,6 @@ class ArrayCacheTest extends TestCase
         ];
 
         $cache = new ArrayCache();
-
         $cache->set($routes);
 
         $this->assertEquals($routes, $cache->get());

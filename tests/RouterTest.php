@@ -70,11 +70,13 @@ class RouterTest extends TestCase
         $stub->method('match')
             ->willReturn(RouteBuilder::get('/')->build());
 
+        $collection = new Collection(
+            new DefaultHandler(new FakeMatcher(), new FakeParser())
+        );
+
         $router = new Router();
-
         $request = new Request('get', '/', '', '');
-
-        $router->add($stub);
+        $router->addMany([$collection, $stub]);
 
         $this->assertInstanceOf(RouteMatch::class, $router->resolve($request));
 

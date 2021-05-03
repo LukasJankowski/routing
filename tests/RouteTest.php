@@ -1,6 +1,5 @@
 <?php
 
-use LukasJankowski\Routing\Constraints\FakeConstraint;
 use LukasJankowski\Routing\Constraints\HostConstraint;
 use LukasJankowski\Routing\Constraints\MethodConstraint;
 use LukasJankowski\Routing\Constraints\SchemeConstraint;
@@ -10,87 +9,68 @@ use PHPUnit\Framework\TestCase;
 
 class RouteTest extends TestCase
 {
-    public function test_it_can_be_instantiated()
-    {
-        $route = new Route('/');
+    private Route $route;
 
-        $this->assertInstanceOf(Route::class, $route);
+    /**
+     * @inheritdoc
+     */
+    protected function setUp(): void
+    {
+        $this->route = new Route(
+            '/{var}/path',
+            'SomeAction@handle',
+            'name',
+            [
+                MethodConstraint::class => ['GET'],
+                HostConstraint::class => 'host.com',
+                SchemeConstraint::class => ['HTTPS'],
+                SegmentConstraint::class => [['name' => 'to', 'pattern' => '\d+']]
+            ],
+            ['test_middleware'],
+            ['to' => 'default']
+        );
+    }
+
+    /**
+     * Validate the route's contents.
+     */
+    private function validateRoute(Route $route): void
+    {
+        $this->assertEquals(['GET'], $route->getMethods());
+        $this->assertEquals('/{var}/path', $route->getPath());
+        $this->assertEquals('SomeAction@handle', $route->getAction());
+        $this->assertEquals('name', $route->getName());
+        $this->assertEquals('host.com', $route->getHost());
+        $this->assertEquals(['HTTPS'], $route->getSchemes());
+        $this->assertEquals(
+            [
+                MethodConstraint::class => ['GET'],
+                HostConstraint::class => 'host.com',
+                SchemeConstraint::class => ['HTTPS'],
+                SegmentConstraint::class => [['name' => 'to', 'pattern' => '\d+']]
+            ],
+            $route->getConstraints()
+        );
+        $this->assertEquals(['test_middleware'], $route->getMiddlewares());
+        $this->assertEquals(['to' => 'default'], $route->getDefaults());
+        $this->assertNull($route->getPrepared());
+        $this->assertEmpty($route->getParameters());
     }
 
     public function test_it_can_be_constructed()
     {
-        $route = new Route(
-            '/{var}/path',
-        [$this, 'test_it_can_be_constructed'],
-            'name',
-            [
-                MethodConstraint::class => ['GET'],
-                HostConstraint::class => 'host.com',
-                SchemeConstraint::class => ['HTTPS'],
-                SegmentConstraint::class => [['name' => 'to', 'pattern' => '\d+']]
-            ],
-            ['test_middleware'],
-            ['to' => 'default']
-        );
+        $route = $this->route;
 
-        $this->assertEquals(['GET'], $route->getMethods());
-        $this->assertEquals('/{var}/path', $route->getPath());
-        $this->assertEquals([$this, 'test_it_can_be_constructed'], $route->getAction());
-        $this->assertEquals('name', $route->getName());
-        $this->assertEquals('host.com', $route->getHost());
-        $this->assertEquals(['HTTPS'], $route->getSchemes());
-        $this->assertEquals(
-            [
-                MethodConstraint::class => ['GET'],
-                HostConstraint::class => 'host.com',
-                SchemeConstraint::class => ['HTTPS'],
-                SegmentConstraint::class => [['name' => 'to', 'pattern' => '\d+']]
-            ],
-            $route->getConstraints()
-        );
-        $this->assertEquals(['test_middleware'], $route->getMiddlewares());
-        $this->assertEquals(['to' => 'default'], $route->getDefaults());
-        $this->assertNull($route->getPrepared());
-        $this->assertEmpty($route->getParameters());
+        $this->validateRoute($route);
     }
 
     public function test_it_can_be_serialized()
     {
-        $route = new Route(
-            '/{var}/path',
-            [FakeConstraint::class, 'validate'],
-            'name',
-            [
-                MethodConstraint::class => ['GET'],
-                HostConstraint::class => 'host.com',
-                SchemeConstraint::class => ['HTTPS'],
-                SegmentConstraint::class => [['name' => 'to', 'pattern' => '\d+']]
-            ],
-            ['test_middleware'],
-            ['to' => 'default']
-        );
+        $route = $this->route;
 
         $route = unserialize(serialize($route));
 
-        $this->assertEquals(['GET'], $route->getMethods());
-        $this->assertEquals('/{var}/path', $route->getPath());
-        $this->assertEquals([FakeConstraint::class, 'validate'], $route->getAction());
-        $this->assertEquals('name', $route->getName());
-        $this->assertEquals('host.com', $route->getHost());
-        $this->assertEquals(['HTTPS'], $route->getSchemes());
-        $this->assertEquals(
-            [
-                MethodConstraint::class => ['GET'],
-                HostConstraint::class => 'host.com',
-                SchemeConstraint::class => ['HTTPS'],
-                SegmentConstraint::class => [['name' => 'to', 'pattern' => '\d+']]
-            ],
-            $route->getConstraints()
-        );
-        $this->assertEquals(['test_middleware'], $route->getMiddlewares());
-        $this->assertEquals(['to' => 'default'], $route->getDefaults());
-        $this->assertNull($route->getPrepared());
-        $this->assertEmpty($route->getParameters());
+        $this->validateRoute($route);
     }
 
     public function test_it_throws_an_exception_when_serializing_closures()

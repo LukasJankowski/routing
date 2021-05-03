@@ -5,43 +5,37 @@ use PHPUnit\Framework\TestCase;
 
 class RequestTest extends TestCase
 {
-    private string $host;
-
-    private string $path;
+    private Request $request;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->host = php_uname('n');
-        $this->path = '/';
+        $this->request = new Request('GET', '/', php_uname('n'), '');
     }
 
     public function test_it_can_be_created_from_superglobal()
     {
-        $this->assertEquals(
-            new Request('GET', $this->path, $this->host, ''),
-            Request::fromSuperGlobal()
-        );
+        $this->assertEquals($this->request, Request::fromSuperGlobal());
     }
 
     public function test_it_can_be_created_from_psr_request()
     {
         $this->assertEquals(
-            new Request('GET', $this->path, $this->host, ''),
-            Request::fromPsrRequest(new \Nyholm\Psr7\ServerRequest('GET', $this->path))
+            $this->request,
+            Request::fromPsrRequest(new \Nyholm\Psr7\ServerRequest('GET', $this->request->path))
         );
     }
 
     public function test_it_can_be_created_from_symfony_request()
     {
         $this->assertEquals(
-            new Request('GET', $this->path, $this->host, ''),
+            $this->request,
             Request::fromSymfonyRequest(\Symfony\Component\HttpFoundation\Request::createFromGlobals())
         );
     }
 
-    public function test_it_can_be_created_faking_environment()
+    public function test_it_can_be_created_with_a_faked_environment()
     {
         $_SERVER['REQUEST_METHOD'] = 'post';
         $_SERVER['REQUEST_URI'] = '/path/to/resource';

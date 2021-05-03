@@ -77,7 +77,7 @@ include:
     - Better unit tests / less duplication
     
 - Routing Factories &check;
-- Compile Cache (&check;)
+- Compile Cache &check;
 
 
 ### Versioning

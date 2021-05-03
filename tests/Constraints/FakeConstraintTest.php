@@ -4,21 +4,11 @@ namespace Constraints;
 
 use LukasJankowski\Routing\Constraints\FakeConstraint;
 use LukasJankowski\Routing\Request;
-use LukasJankowski\Routing\Route;
 use LukasJankowski\Routing\RouteBuilder;
 use PHPUnit\Framework\TestCase;
 
 class FakeConstraintTest extends TestCase
 {
-    public function test_it_can_be_instantiated()
-    {
-        $constraint = new FakeConstraint();
-        $constraint->setRequest(new Request('get', '/', '', ''));
-        $constraint->setRoute(new Route('get', '/'));
-
-        $this->assertInstanceOf(FakeConstraint::class, $constraint);
-    }
-
     public function test_it_returns_an_error_message()
     {
         $constraint = new FakeConstraint();
@@ -33,7 +23,7 @@ class FakeConstraintTest extends TestCase
         $this->assertIsInt($constraint->getErrorCode());
     }
 
-    public function test_it_validates_the_scheme()
+    public function test_it_validates_nothing()
     {
         $constraint = new FakeConstraint();
 

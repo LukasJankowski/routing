@@ -4,21 +4,11 @@ namespace Constraints;
 
 use LukasJankowski\Routing\Constraints\HostConstraint;
 use LukasJankowski\Routing\Request;
-use LukasJankowski\Routing\Route;
 use LukasJankowski\Routing\RouteBuilder;
 use PHPUnit\Framework\TestCase;
 
 class HostConstraintTest extends TestCase
 {
-    public function test_it_can_be_instantiated()
-    {
-        $constraint = new HostConstraint();
-        $constraint->setRequest(new Request('get', '/', '', ''));
-        $constraint->setRoute(new Route('get', '/'));
-
-        $this->assertInstanceOf(HostConstraint::class, $constraint);
-    }
-
     public function test_it_returns_an_error_message()
     {
         $constraint = new HostConstraint();
@@ -33,40 +23,52 @@ class HostConstraintTest extends TestCase
         $this->assertIsInt($constraint->getErrorCode());
     }
 
-    public function test_it_validates_the_scheme()
+    public function provideValidHost(): array
+    {
+        return [
+            ['request' => 'test.com', 'route' => 'test.com'],
+            ['request' => 'api.test.com', 'route' => 'api.test.com'],
+        ];
+    }
+
+    public function provideInvalidHost(): array
+    {
+        return [
+            ['request' => 'test.com', 'route' => 'another.com'],
+            ['request' => '', 'route' => 'another.com'],
+            ['request' => 'api.test.com', 'route' => 'mail.test.com'],
+        ];
+    }
+
+    /**
+     * @dataProvider provideValidHost
+     */
+    public function test_it_validates_host($requestHost, $route)
     {
         $constraint = new HostConstraint();
 
-        $valid = [
-            'test.com' => 'test.com',
-            'api.test.com' => 'api.test.com'
-        ];
+        $request = new Request('get', '/', '', '');
+        $request->host = $requestHost;
 
-        $invalid = [
-            'test.com' => 'another.com',
-            '' => 'another.com',
-            'api.test.com' => 'mail.test.com',
-        ];
+        $constraint->setRequest($request);
+        $constraint->setRoute(RouteBuilder::get('/')->host($route)->build());
 
-        foreach ($valid as $requestHost => $routeHost) {
-            $request = new Request('get', '/', $requestHost, '');
-            $request->host = $requestHost;
+        $this->assertTrue($constraint->validate());
+    }
 
-            $constraint->setRequest($request);
-            $constraint->setRoute(RouteBuilder::get('/')->host($routeHost)->build());
+    /**
+     * @dataProvider provideInvalidHost
+     */
+    public function test_it_validates_invalid_host($requestHost, $route)
+    {
+        $constraint = new HostConstraint();
 
-            $this->assertTrue($constraint->validate());
-        }
+        $request = new Request('get', '/', '', '');
+        $request->host = $requestHost;
 
+        $constraint->setRequest($request);
+        $constraint->setRoute(RouteBuilder::get('/')->host($route)->build());
 
-        foreach ($invalid as $requestHost => $routeHost) {
-            $request = new Request('get', '/', $requestHost, '');
-            $request->host = $requestHost;
-
-            $constraint->setRequest($request);
-            $constraint->setRoute(RouteBuilder::get('/')->host($routeHost)->build());
-
-            $this->assertFalse($constraint->validate());
-        }
+        $this->assertFalse($constraint->validate());
     }
 }

@@ -111,6 +111,14 @@ class Collection implements IteratorAggregate, Countable
     }
 
     /**
+     * Getter.
+     */
+    public function isParsed(): bool
+    {
+        return $this->parsed;
+    }
+
+    /**
      * Filter the routes by name.
      */
     public function getRouteByName(string $name): ?Route

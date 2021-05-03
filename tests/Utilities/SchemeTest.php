@@ -9,13 +9,38 @@ use PHPUnit\Framework\TestCase;
 
 class SchemeTest extends TestCase
 {
-    public function test_it_normalizes_schemes()
+    public function provideSchemes(): array
     {
-        $this->assertEquals('HTTPS', Scheme::normalize('hTTps'));
-        $this->assertEquals(['HTTP', 'HTTPS'], Scheme::normalize(['http', 'HTTPS']));
-        $this->assertEquals('', Scheme::normalize(''));
-        $this->assertEquals(Request::SCHEMES, Scheme::normalize([]));
+        return [
+            [
+                'given' => 'hTTps',
+                'expected' => 'HTTPS'
+            ],
+            [
+                'given' => ['http', 'HTTPS'],
+                'expected' => ['HTTP', 'HTTPS']
+            ],
+            [
+                'given' => '',
+                'expected' => '',
+            ],
+            [
+                'given' => [],
+                'expected' => Request::SCHEMES
+            ]
+        ];
+    }
 
+    /**
+     * @dataProvider provideSchemes
+     */
+    public function test_it_normalizes_schemes($given, $expected)
+    {
+        $this->assertEquals($expected, Scheme::normalize($given));
+    }
+
+    public function test_it_throws_exception_on_unknown_scheme()
+    {
         $this->expectException(InvalidArgumentException::class);
 
         Scheme::normalize('unknown_scheme');

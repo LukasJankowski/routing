@@ -4,7 +4,6 @@ namespace Handlers\Fixed;
 
 use LukasJankowski\Routing\Collection;
 use LukasJankowski\Routing\Handlers\Fixed\FixedMatcher;
-use LukasJankowski\Routing\Handlers\MatcherInterface;
 use LukasJankowski\Routing\Request;
 use LukasJankowski\Routing\RouteBuilder;
 use PHPUnit\Framework\TestCase;
@@ -12,84 +11,86 @@ use RuntimeException;
 
 class FixedMatcherTest extends TestCase
 {
-    public function test_it_can_be_instantiated()
-    {
-        $matcher = new FixedMatcher();
+    private FixedMatcher $matcher;
 
-        $this->assertInstanceOf(MatcherInterface::class, $matcher);
-        $this->assertInstanceOf(FixedMatcher::class, $matcher);
+    protected function setUp(): void
+    {
+        $this->matcher = new FixedMatcher();
     }
 
-    public function test_it_can_match_routes()
+    public function provideValidPaths(): array
     {
-        $matcher = new FixedMatcher();
-
-        $valid = [
-            '/',
-            '/path',
-            '/nested/path',
-            '/deeply/nested/path/with/many/segments'
+        return [
+            ['/'],
+            ['/path'],
+            ['/nested/path'],
+            ['/deeply/nested/path/with/many/segments'],
         ];
+    }
 
-        $invalid = [
-            '/' => '/path',
-            '/path' => '/p4th',
-            '/nested/path' => '/mismatch/path',
-            '/deeply/nested/path' => '/short',
-            '/inverse' => '/deeply/nested/path'
+    /**
+     * @dataProvider provideValidPaths
+     */
+    public function test_it_can_match_routes($given)
+    {
+        $route = RouteBuilder::get($given)->build();
+        $request = new Request('get', $given, '', '');
+
+        $this->assertTrue($this->matcher->matches($route, $request));
+    }
+
+    public function provideInvalidPaths(): array
+    {
+        return [
+            ['route' => '/', 'request' => '/path'],
+            ['route' => '/path', 'request' => '/p4th'],
+            ['route' => '/nested/path', 'request' => '/mismatch/path'],
+            ['route' => '/deeply/nested/path', 'request' => '/short'],
+            ['route' => '/inverse', 'request' => '/deeply/nested/path'],
         ];
+    }
 
-        foreach ($valid as $path) {
-            $route = RouteBuilder::get($path)->build();
-            $request = new Request('get', $path, '', '');
+    /**
+     * @dataProvider provideInvalidPaths
+     */
+    public function test_it_cant_match_invalid_routes($route, $request)
+    {
+        $route = RouteBuilder::get($route)->build();
+        $request = new Request('get', $request, '', '');
 
-            $this->assertTrue($matcher->matches($route, $request));
-        }
-
-        foreach ($invalid as $routePath => $requestPath) {
-            $route = RouteBuilder::get($routePath)->build();
-            $request = new Request('get', $requestPath, '', '');
-
-            $this->assertFalse($matcher->matches($route, $request));
-        }
+        $this->assertFalse($this->matcher->matches($route, $request));
     }
 
     public function test_it_throws_exception_on_bad_method()
     {
-        $matcher = new FixedMatcher();
-
         $route = RouteBuilder::get('/')->build();
         $request = new Request('post', '/', '', '');
 
         $this->expectExceptionMessage('constraint.method.mismatch');
 
-        $matcher->matches($route, $request);
+        $this->matcher->matches($route, $request);
     }
 
     public function test_it_throws_exception_on_bad_host()
     {
-        $matcher = new FixedMatcher();
-
         $route = RouteBuilder::get('/')->host('another.com')->build();
         $request = new Request('get', '/', 'test.com', '');
 
         $this->expectExceptionMessage('constraint.host.mismatch');
 
-        $matcher->matches($route, $request);
+        $this->matcher->matches($route, $request);
 
     }
 
     public function test_it_throws_exception_on_bad_scheme()
     {
-        $matcher = new FixedMatcher();
-
         $route = RouteBuilder::get('/')->scheme('https')->build();
         $request = new Request('get', '/', '', 'http');
         $request->scheme = 'HTTP';
 
         $this->expectExceptionMessage('constraint.scheme.mismatch');
 
-        $matcher->matches($route, $request);
+        $this->matcher->matches($route, $request);
     }
 
     public function test_it_throws_an_exception_on_invalid_constraint()
@@ -98,12 +99,10 @@ class FixedMatcherTest extends TestCase
             ->constraint(Collection::class, 'some-value')
             ->build();
 
-        $matcher = new FixedMatcher();
-
         $request = new Request('get', '/', '', '');
 
         $this->expectException(RuntimeException::class);
 
-        $matcher->matches($route, $request);
+        $this->matcher->matches($route, $request);
     }
 }

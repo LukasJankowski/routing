@@ -3,7 +3,6 @@
 namespace Handlers\Regex;
 
 use LukasJankowski\Routing\Handlers\Regex\RegexParser;
-use LukasJankowski\Routing\Handlers\ParserInterface;
 use LukasJankowski\Routing\PatternRegistry;
 use LukasJankowski\Routing\Route;
 use LukasJankowski\Routing\RouteBuilder;
@@ -11,83 +10,180 @@ use PHPUnit\Framework\TestCase;
 
 class RegexParserTest extends TestCase
 {
-    public function test_it_can_be_instantiated()
-    {
-        $parser = new RegexParser();
+    private RegexParser $parser;
 
-        $this->assertInstanceOf(RegexParser::class, $parser);
-        $this->assertInstanceOf(ParserInterface::class, $parser);
+    protected function setUp(): void
+    {
+        $this->parser = new RegexParser();
     }
 
-    public function test_it_can_parse_routes()
+    public function provideRoutes(): array
     {
-        $parser = new RegexParser();
+        return [
+            [
+                'given' => '/',
+                'expected' => '#^/?$#'
+            ],
+            [
+                'given' => '/path',
+                'expected' => '#^/?path$#'
+            ],
+            [
+                'given' => '/{var}',
+                'expected' => '#^/?(?:/(?<var>[^/]+))$#'
+            ],
+            [
+                'given' => '/nested/{var}',
+                'expected' => '#^/?nested(?:/(?<var>[^/]+))$#'
+            ],
+            [
+                'given' => '/{var}/nested',
+                'expected' => '#^/?(?:/(?<var>[^/]+))/nested$#'
+            ],
+            [
+                'given' => '/{double}/{var}',
+                'expected' => '#^/?(?:/(?<double>[^/]+))(?:/(?<var>[^/]+))$#'
+            ],
+            [
+                'given' => '/in/{between}/nested',
+                'expected' => '#^/?in(?:/(?<between>[^/]+))/nested$#'
+            ],
+            [
+                'given' => '/{var:\d+}',
+                'expected' => '#^/?(?:/(?<var>\d+))$#'
+            ],
+            [
+                'given' => '/{var:\d{4}}',
+                'expected' => '#^/?(?:/(?<var>\d{4}))$#'
+            ],
+            [
+                'given' => '/{var:[a-z]+}',
+                'expected' => '#^/?(?:/(?<var>[a-z]+))$#'
+            ],
+            [
+                'given' => '/nested/{var:\d+}',
+                'expected' => '#^/?nested(?:/(?<var>\d+))$#'
+            ],
+            [
+                'given' => '/{?var}',
+                'expected' => '#^/?(?:/(?<var>[^/]+))?$#'
+            ],
+            [
+                'given' => '/{?var:\d+}',
+                'expected' => '#^/?(?:/(?<var>\d+))?$#'
+            ],
+            [
+                'given' => '/static/{?var}',
+                'expected' => '#^/?static(?:/(?<var>[^/]+))?$#'
+            ],
+            [
+                'given' => '/static/{?var:\d+}',
+                'expected' => '#^/?static(?:/(?<var>\d+))?$#'
+            ],
+            [
+                'given' => '/{?var}/static',
+                'expected' => '#^/?(?:/(?<var>[^/]+))?/static$#'
+            ],
+            [
+                'given' => '/{?var}/{?test}',
+                'expected' => '#^/?(?:/(?<var>[^/]+))?(?:/(?<test>[^/]+))?$#'
+            ],
+            [
+                'given' => '/in/{?var}/between',
+                'expected' => '#^/?in(?:/(?<var>[^/]+))?/between$#'
+            ],
+            [
+                'given' => '/{*var}',
+                'expected' => '#^/?(?:/(?<var>.+))$#'
+            ],
+            [
+                'given' => '/{*ignored:\d+}',
+                'expected' => '#^/?(?:/(?<ignored>.+))$#'
+            ],
+            [
+                'given' => '/static/{*var}',
+                'expected' => '#^/?static(?:/(?<var>.+))$#'
+            ],
+            [
+                'given' => '/{*early}/static',
+                'expected' => '#^/?(?:/(?<early>.+))/static$#'
+            ],
+            [
+                'given' => '/in/{*var}/between',
+                'expected' => '#^/?in(?:/(?<var>.+))/between$#'
+            ],
+            [
+                'given' => '/{*two}/{*wildcards}',
+                'expected' => '#^/?(?:/(?<two>.+))(?:/(?<wildcards>.+))$#'
+            ],
+            [
+                'given' => '/{*?var}',
+                'expected' => '#^/?(?:/(?<var>.+))?$#'
+            ],
+            [
+                'given' => '/{?*var}',
+                'expected' => '#^/?(?:/(?<var>.+))?$#'
+            ],
+            [
+                'given' => '/static/{?*var}',
+                'expected' => '#^/?static(?:/(?<var>.+))?$#'
+            ],
+            [
+                'given' => '/{?*var}/static',
+                'expected' => '#^/?(?:/(?<var>.+))?/static$#'
+            ],
+            [
+                'given' => '/combo/{var}/{?opt}/{*wildcard}',
+                'expected' => '#^/?combo(?:/(?<var>[^/]+))(?:/(?<opt>[^/]+))?(?:/(?<wildcard>.+))$#'
+            ],
+            [
+                'given' => '/combo/{?opt}/{*wildcard}/{var}',
+                'expected' => '#^/?combo(?:/(?<opt>[^/]+))?(?:/(?<wildcard>.+))(?:/(?<var>[^/]+))$#'
+            ],
+            [
+                'given' => '/combo/{?opt}/{?*wildcard}/{?var}',
+                'expected' => '#^/?combo(?:/(?<opt>[^/]+))?(?:/(?<wildcard>.+))?(?:/(?<var>[^/]+))?$#'
+            ],
+            [
+                'given' => '/combo/{?*wc}/static/{var}/{?opt}',
+                'expected' => '#^/?combo(?:/(?<wc>.+))?/static(?:/(?<var>[^/]+))(?:/(?<opt>[^/]+))?$#'
+            ],
+        ];
+    }
 
+    /**
+     * @dataProvider provideRoutes
+     */
+    public function test_it_can_parse_routes($given, $expected)
+    {
+        /** @var Route $parsed */
+        $parsed = $this->parser->parse([RouteBuilder::get($given)->build()])[0];
+
+        $this->assertEquals($expected, $parsed->getPrepared());
+    }
+
+    public function test_it_can_parse_routes_with_pattern_registry()
+    {
         PatternRegistry::pattern('year', '\d{4}');
         PatternRegistry::pattern('month', '\d{2}');
         PatternRegistry::pattern('day', '\d{2}');
 
-        $paths = [
-            '/' => '#^/?$#',
-            '/path' => '#^/?path$#',
-            '/{var}' => '#^/?(?:/(?<var>[^/]+))$#',
-            '/nested/{var}' => '#^/?nested(?:/(?<var>[^/]+))$#',
-            '/{var}/nested' => '#^/?(?:/(?<var>[^/]+))/nested$#',
-            '/{double}/{var}' => '#^/?(?:/(?<double>[^/]+))(?:/(?<var>[^/]+))$#',
-            '/in/{between}/nested' => '#^/?in(?:/(?<between>[^/]+))/nested$#',
+        /** @var Route $parsed */
+        $parsed = $this->parser->parse([RouteBuilder::get('/{year:year}/{month:\d{2}}/{day:day}')->build()])[0];
 
-            '/{var:\d+}' => '#^/?(?:/(?<var>\d+))$#',
-            '/{var:\d{4}}' => '#^/?(?:/(?<var>\d{4}))$#',
-            '/{var:[a-z]+}' => '#^/?(?:/(?<var>[a-z]+))$#',
-            '/nested/{var:\d+}' => '#^/?nested(?:/(?<var>\d+))$#',
-
-            '/{?var}' => '#^/?(?:/(?<var>[^/]+))?$#',
-            '/{?var:\d+}' => '#^/?(?:/(?<var>\d+))?$#',
-            '/static/{?var}' => '#^/?static(?:/(?<var>[^/]+))?$#',
-            '/static/{?var:\d+}' => '#^/?static(?:/(?<var>\d+))?$#',
-            '/{?var}/static' => '#^/?(?:/(?<var>[^/]+))?/static$#',
-            '/{?var}/{?test}' => '#^/?(?:/(?<var>[^/]+))?(?:/(?<test>[^/]+))?$#',
-            '/in/{?var}/between' => '#^/?in(?:/(?<var>[^/]+))?/between$#',
-
-            '/{*var}' => '#^/?(?:/(?<var>.+))$#',
-            '/{*ignored:\d+}' => '#^/?(?:/(?<ignored>.+))$#',
-            '/static/{*var}' => '#^/?static(?:/(?<var>.+))$#',
-            '/{*early}/static' => '#^/?(?:/(?<early>.+))/static$#',
-            '/in/{*var}/between' => '#^/?in(?:/(?<var>.+))/between$#',
-            '/{*two}/{*wildcards}' => '#^/?(?:/(?<two>.+))(?:/(?<wildcards>.+))$#',
-
-            '/{*?var}' => '#^/?(?:/(?<var>.+))?$#',
-            '/{?*var}' => '#^/?(?:/(?<var>.+))?$#',
-            '/static/{?*var}' => '#^/?static(?:/(?<var>.+))?$#',
-            '/{?*var}/static' => '#^/?(?:/(?<var>.+))?/static$#',
-
-            '/combo/{var}/{?opt}/{*wildcard}' => '#^/?combo(?:/(?<var>[^/]+))(?:/(?<opt>[^/]+))?(?:/(?<wildcard>.+))$#',
-            '/combo/{?opt}/{*wildcard}/{var}' => '#^/?combo(?:/(?<opt>[^/]+))?(?:/(?<wildcard>.+))(?:/(?<var>[^/]+))$#',
-            '/combo/{?opt}/{?*wildcard}/{?var}' => '#^/?combo(?:/(?<opt>[^/]+))?(?:/(?<wildcard>.+))?(?:/(?<var>[^/]+))?$#',
-            '/combo/{?*wc}/static/{var}/{?opt}' => '#^/?combo(?:/(?<wc>.+))?/static(?:/(?<var>[^/]+))(?:/(?<opt>[^/]+))?$#',
-
-            '/{year:year}/{month:\d{2}}/{day:day}' => '#^/?(?:/(?<year>\d{4}))(?:/(?<month>\d{2}))(?:/(?<day>\d{2}))$#',
-        ];
-
-        foreach ($paths as $path => $expected) {
-            $route = RouteBuilder::get($path)->build();
-            /** @var Route $parsed */
-            $parsed = $parser->parse([$route])[0];
-
-            $this->assertEquals($route->getPath(), $parsed->getPath());
-            $this->assertEquals($expected, $parsed->getPrepared());
-        }
+        $this->assertEquals(
+            '#^/?(?:/(?<year>\d{4}))(?:/(?<month>\d{2}))(?:/(?<day>\d{2}))$#',
+            $parsed->getPrepared()
+        );
     }
 
     public function test_it_doesnt_parse_when_already_parsed()
     {
-        $parser = new RegexParser();
-
         $route = RouteBuilder::get('/')->build();
         $route->setPrepared('/some-parsed-path');
 
         /** @var Route $parsed */
-        $parsed = $parser->parse([$route])[0];
+        $parsed = $this->parser->parse([$route])[0];
 
 
         $this->assertEquals('/some-parsed-path', $parsed->getPrepared());

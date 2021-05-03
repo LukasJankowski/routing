@@ -6,46 +6,93 @@ use PHPUnit\Framework\TestCase;
 
 class LinkTest extends TestCase
 {
-    public function test_it_can_create_links()
+    public function provideValidLinks(): array
     {
-        $valid = [
-            '/' => ['expected' => '/', 'params' => []],
-            '/path' => ['expected' => '/path', 'params' => []],
-            '/{var}' => ['expected' => '/anything', 'params' => ['var' => 'anything']],
-            '/nested/{var}' => ['expected' => '/nested/anything', 'params' => ['var' => 'anything']],
-            '/{var}/nested' => ['expected' => '/anything/nested', 'params' => ['var' => 'anything']],
-            '/{double}/{var}' => [
+        return [
+            [
+                'path' => '/',
+                'expected' => '/',
+                'params' => []
+            ],
+            [
+                'path' => '/path',
+                'expected' => '/path',
+                'params' => []
+            ],
+            [
+                'path' => '/{var}',
+                'expected' => '/anything',
+                'params' => ['var' => 'anything']
+            ],
+            [
+                'path' => '/nested/{var}',
+                'expected' => '/nested/anything',
+                'params' => ['var' => 'anything']
+            ],
+            [
+                'path' => '/{var}/nested',
+                'expected' => '/anything/nested',
+                'params' => ['var' => 'anything']
+            ],
+            [
+                'path' => '/{double}/{var}',
                 'expected' => '/anything/nested',
                 'params' => ['double' => 'anything', 'var' => 'nested']
             ],
-            '/in/{between}/nested' => ['expected' => '/in/anything/nested', 'params' => ['between' => 'anything']],
-
-            '/{var:\d+}' => ['expected' => '/123123', 'params' => ['var' => '123123']],
-
-            '/{?var}' => ['expected' => '/', 'params' => []],
-            '/{?var}/static' => ['expected' => '/static', 'params' => []],
-            '/{?var}/{?test}' => ['expected' => '/', 'params' => []],
-
-            '/{*var}' => ['expected' => '/anything/more/test', 'params' => ['var' => ['anything', 'more', 'test']]],
-            '/static/{*var}' => [
+            [
+                'path' => '/in/{between}/nested',
+                'expected' => '/in/anything/nested',
+                'params' => ['between' => 'anything']
+            ],
+            [
+                'path' => '/{var:\d+}',
+                'expected' => '/123123',
+                'params' => ['var' => '123123']
+            ],
+            [
+                'path' => '/{?var}',
+                'expected' => '/',
+                'params' => []
+            ],
+            [
+                'path' => '/{?var}/static',
+                'expected' => '/static',
+                'params' => []
+            ],
+            [
+                'path' => '/{?var}/{?test}',
+                'expected' => '/',
+                'params' => []
+            ],
+            [
+                'path' => '/{*var}',
+                'expected' => '/anything/more/test',
+                'params' => ['var' => ['anything', 'more', 'test']]
+            ],
+            [
+                'path' => '/static/{*var}',
                 'expected' => '/static/anything/more/test',
                 'params' => ['var' => ['anything', 'more', 'test']]
             ],
-
-            '/{*?var}' => ['expected' => '/', 'params' => []],
-
-            '/long/static/part/{*wc}/{var}' => [
+            [
+                'path' => '/{*?var}',
+                'expected' => '/',
+                'params' => []
+            ],
+            [
+                'path' => '/long/static/part/{*wc}/{var}',
                 'expected' => '/long/static/part/wildcard/segments/variable',
                 'params' => ['wc' => ['wildcard', 'segments'], 'var' => 'variable']
             ]
         ];
+    }
 
-        foreach ($valid as $route => $expected) {
-
-            $route = RouteBuilder::get($route)->build();
-
-            $this->assertEquals($expected['expected'], Link::to($route, $expected['params']));
-        }
+    /**
+     * @dataProvider provideValidLinks
+     */
+    public function test_it_can_create_links($path, $expected, $params)
+    {
+        $this->assertEquals($expected, Link::to(RouteBuilder::get($path)->build(),$params));
     }
 
     public function test_it_fails_with_invalid_parameters()

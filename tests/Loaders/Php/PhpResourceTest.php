@@ -5,7 +5,7 @@ namespace Loaders\Php;
 use ErrorException;
 use InvalidArgumentException;
 use LukasJankowski\Routing\Loaders\Php\PhpResource;
-use LukasJankowski\Routing\Route;
+use LukasJankowski\Routing\RouteBuilder;
 use PHPUnit\Framework\TestCase;
 
 class PhpResourceTest extends TestCase
@@ -16,8 +16,8 @@ class PhpResourceTest extends TestCase
 
         $this->assertEquals(
             [
-                new Route('get', '/'),
-                new Route('post', '/another')
+                RouteBuilder::get('/')->build(),
+                RouteBuilder::post('/another')->build(),
             ],
             $resource->get()
         );

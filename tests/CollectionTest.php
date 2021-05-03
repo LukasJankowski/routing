@@ -14,66 +14,72 @@ use PHPUnit\Framework\TestCase;
 
 class CollectionTest extends TestCase
 {
+    private Collection $collection;
+
+    protected function setUp(): void
+    {
+        $this->collection = new Collection(new DefaultHandler(new FakeMatcher(), new FakeParser()));
+    }
+
     public function test_it_can_be_instantiated()
     {
-        $collection = new Collection(new DefaultHandler(new FakeMatcher(), new FakeParser()));
+        $collection = $this->collection;
 
         $this->assertEmpty($collection->getRoutes());
         $this->assertEquals('default', $collection->getName());
-        $this->assertInstanceOf(Collection::class, $collection);
     }
 
     public function test_it_can_add_routes()
     {
-        $collection = new Collection(new DefaultHandler(new FakeMatcher(), new FakeParser()));
-        $collection->add(new Route('get', '/'));
-        $collection->add(new Route('get', '/path'));
+        $collection = $this->collection;
+        $collection->add(RouteBuilder::get('/')->build());
+        $collection->add(RouteBuilder::get('/path')->build());
 
-        $collection->addMany([new Route('get', '/test'), new Route('get', '/another')]);
+        $collection->addMany([RouteBuilder::get('/test')->build(), RouteBuilder::get('/another')->build()]);
 
         $this->assertCount(4, $collection->getRoutes());
     }
 
     public function test_it_has_convenience()
     {
-        $collection = new Collection(new DefaultHandler(new FakeMatcher(), new FakeParser()));
-        $collection->add(new Route('get', '/'));
+        $collection = $this->collection;
+        $collection->add(RouteBuilder::get('/')->build());
 
         $this->assertIsIterable($collection);
-        $this->assertIsIterable($collection->getIterator());
+        $this->assertInstanceOf(ArrayIterator::class, $collection->getIterator());
 
         $this->assertCount(1, $collection);
-
+        $this->assertEquals(1, $collection->count());
     }
 
     public function test_it_can_load_routes_from_resource()
     {
-        $route = new Route('get', '/');
+        $route = [RouteBuilder::get('/')->build()];
         $collection = new Collection(
             new DefaultHandler(new FakeMatcher(), new FakeParser()),
-            new DefaultLoader(null, new ArrayResource([$route]))
+            new DefaultLoader(null, new ArrayResource($route))
         );
 
         $this->assertCount(1, $collection->getRoutes());
-        $this->assertEquals([$route], $collection->getRoutes());
+        $this->assertEquals($route, $collection->getRoutes());
     }
 
     public function test_it_can_load_routes_from_cache()
     {
-        $route = new Route('get', '/');
+        $route = [RouteBuilder::get('/')->build()];
         $collection = new Collection(
             new DefaultHandler(new FakeMatcher(), new FakeParser()),
-            new DefaultLoader(new ArrayCache([$route]), new ArrayResource())
+            new DefaultLoader(new ArrayCache($route), new ArrayResource())
         );
 
         $this->assertCount(1, $collection->getRoutes());
-        $this->assertEquals([$route], $collection->getRoutes());
+        $this->assertEquals($route, $collection->getRoutes());
     }
 
     public function test_it_prefers_loading_from_cache()
     {
-        $cacheRoute = new Route('get', '/');
-        $resourceRoute = new Route('post', '/path');
+        $cacheRoute = RouteBuilder::get('/')->build();
+        $resourceRoute = RouteBuilder::post('/path')->build();
 
         $collection = new Collection(
             new DefaultHandler(new FakeMatcher(), new FakeParser()),
@@ -86,13 +92,13 @@ class CollectionTest extends TestCase
 
     public function test_it_can_dynamically_load_from_resource()
     {
-        $cacheRoute = new Route('get', '/');
-        $resourceRoute = new Route('post', '/path');
+        $cacheRoute = RouteBuilder::get('/')->build();
+        $resourceRoute = RouteBuilder::post('/path')->build();
 
         $cache = new ArrayCache([$cacheRoute]);
         $resource = new ArrayResource([$resourceRoute]);
 
-        $collection = new Collection(new DefaultHandler(new FakeMatcher(), new FakeParser()));
+        $collection = $this->collection;
         $collection->fromLoader(new DefaultLoader($cache));
         $collection->fromLoader(new DefaultLoader(null, $resource));
 
@@ -141,24 +147,22 @@ class CollectionTest extends TestCase
     {
         $route = RouteBuilder::patch('/test')->build();
 
-        $collection = new Collection(
-            new DefaultHandler(new FakeMatcher(), new FakeParser())
-        );
+        $collection = $this->collection;
+
+        $this->assertFalse($collection->isParsed());
 
         $collection->add($route);
-
         $collection->parse();
 
         $this->assertEquals([], $collection->getRoutes());
+        $this->assertTrue($collection->isParsed());
     }
 
     public function test_it_can_match_routes()
     {
         $route = RouteBuilder::get('/test')->build();
 
-        $collection = new Collection(
-            new DefaultHandler(new FakeMatcher(), new FakeParser())
-        );
+        $collection = $this->collection;
 
         $collection->add($route);
 
@@ -189,9 +193,7 @@ class CollectionTest extends TestCase
     {
         $route = RouteBuilder::get('/')->name('route.name')->build();
 
-        $collection = new Collection(
-            new DefaultHandler(new FakeMatcher(), new FakeParser())
-        );
+        $collection = $this->collection;
         $collection->add($route);
 
         $this->assertEquals($route, $collection->getRouteByName('route.name'));

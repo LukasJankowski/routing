@@ -4,20 +4,11 @@ namespace Constraints;
 
 use LukasJankowski\Routing\Constraints\SegmentConstraint;
 use LukasJankowski\Routing\Request;
-use LukasJankowski\Routing\Route;
+use LukasJankowski\Routing\RouteBuilder;
 use PHPUnit\Framework\TestCase;
 
 class SegmentConstraintTest extends TestCase
 {
-    public function test_it_can_be_instantiated()
-    {
-        $constraint = new SegmentConstraint();
-        $constraint->setRequest(new Request('get', '/', '', ''));
-        $constraint->setRoute(new Route('get', '/'));
-
-        $this->assertInstanceOf(SegmentConstraint::class, $constraint);
-    }
-
     public function test_it_returns_an_error_message()
     {
         $constraint = new SegmentConstraint();
@@ -34,7 +25,7 @@ class SegmentConstraintTest extends TestCase
 
     public function test_it_sets_the_parsed_parameters()
     {
-        $route = new Route('get', '/');
+        $route = RouteBuilder::get('/')->build();
         $route->setParameters([
             'var' => [
                 'value' => 'string',

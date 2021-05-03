@@ -7,59 +7,185 @@ use PHPUnit\Framework\TestCase;
 
 class PathTest extends TestCase
 {
-    public function test_it_normalizes_paths()
+    public function providePaths(): array
     {
-        $this->assertEquals('/', Path::normalize(''));
-        $this->assertEquals('/', Path::normalize('//?#'));
+        return [
+            [
+                'given' => '',
+                'expected' => '/'
+            ],
+            [
+                'given' => '//?#',
+                'expected' => '/'
+            ],
+            [
+                'given' => 'nested/path',
+                'expected' => '/nested/path'
+            ],
+            [
+                'given' => 'path/',
+                'expected' => '/path'
+            ],
+            [
+                'given' => 'path/?',
+                'expected' => '/path'
+            ],
+        ];
     }
 
-    public function test_it_splits_paths()
+    /**
+     * @dataProvider providePaths
+     */
+    public function test_it_normalizes_paths($given, $expected)
     {
-        $this->assertEquals(['segment', 'two'], Path::split('/segment/two'));
-        $this->assertEquals([], Path::split('/'));
-        $this->assertEquals(['segment'], Path::split('/segment'));
+        $this->assertEquals($expected, Path::normalize($given));
+    }
 
+    public function provideSplits(): array
+    {
+        return [
+            [
+                'given' => '/segment/two',
+                'expected' => ['segment', 'two']
+            ],
+            [
+                'given' => '/',
+                'expected' => []
+            ],
+            [
+                'given' => '/segment',
+                'expected' => ['segment']
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider provideSplits
+     */
+    public function test_it_splits_paths($given, $expected)
+    {
+        $this->assertEquals($expected, Path::split($given));
+    }
+
+    public function test_it_splits_limited()
+    {
         $this->assertEquals(['segment', 'two/three'], Path::split('/segment/two/three', 2));
     }
 
-    public function test_it_extracts_dynamic_segments_from_path()
+    public function provideDynamicSegments(): array
     {
-        $this->assertEquals(
+        return [
             [
-                '{var}' => ['name' => 'var', 'pattern' => null],
-                '{?opt:\d+}' => ['name' => 'opt', 'pattern' => '\d+']
+                'given' => '/{var}/static/{?opt:\d+}',
+                'expected' => [
+                    '{var}' => ['name' => 'var', 'pattern' => null],
+                    '{?opt:\d+}' => ['name' => 'opt', 'pattern' => '\d+']
+                ]
             ],
-            Path::extractDynamicSegments('/{var}/static/{?opt:\d+}')
-        );
-
-        $this->assertEquals([], Path::extractDynamicSegments('/static/only'));
-        $this->assertEquals([], Path::extractDynamicSegments('/'));
-        $this->assertEquals([], Path::extractDynamicSegments(''));
+            [
+                'given' => '/static/only',
+                'expected' => [],
+            ],
+            [
+                'given' => '/',
+                'expected' => [],
+            ],
+            [
+                'given' => '',
+                'expected' => [],
+            ],
+        ];
     }
 
-    public function test_it_checks_if_the_segment_is_optional()
+    /**
+     * @dataProvider provideDynamicSegments
+     */
+    public function test_it_extracts_dynamic_segments_from_path($given, $expected)
     {
-        $this->assertTrue(Path::isOptionalSegment('{?var}'));
-        $this->assertTrue(Path::isOptionalSegment('{*?var}'));
-        $this->assertTrue(Path::isOptionalSegment('{?*var}'));
-
-        $this->assertFalse(Path::isOptionalSegment('{var}'));
-        $this->assertFalse(Path::isOptionalSegment('{*var}'));
-        $this->assertFalse(Path::isOptionalSegment('/static'));
-        $this->assertFalse(Path::isOptionalSegment('/s'));
-        $this->assertFalse(Path::isOptionalSegment('/'));
+        $this->assertEquals($expected, Path::extractDynamicSegments($given));
     }
 
-    public function test_it_checks_if_the_segment_a_wildcard()
+    public function provideOptionalSegments(): array
     {
-        $this->assertTrue(Path::isWildcardSegment('{*var}'));
-        $this->assertTrue(Path::isWildcardSegment('{*?var}'));
-        $this->assertTrue(Path::isWildcardSegment('{?*var}'));
+        return [
+            [
+                'given' => '{?var}',
+                'expected' => true,
+            ],
+            [
+                'given' => '{*?var}',
+                'expected' => true,
+            ],
+            [
+                'given' => '{?*var}',
+                'expected' => true,
+            ],
+            [
+                'given' => '{var}',
+                'expected' => false,
+            ],
+            [
+                'given' => '{*var}',
+                'expected' => false,
+            ],
+            [
+                'given' => '/static',
+                'expected' => false,
+            ],
+            [
+                'given' => '/',
+                'expected' => false,
+            ],
+        ];
+    }
 
-        $this->assertFalse(Path::isWildcardSegment('{var}'));
-        $this->assertFalse(Path::isWildcardSegment('{?var}'));
-        $this->assertFalse(Path::isWildcardSegment('/static'));
-        $this->assertFalse(Path::isWildcardSegment('/s'));
-        $this->assertFalse(Path::isWildcardSegment('/'));
+    /**
+     * @dataProvider provideOptionalSegments
+     */
+    public function test_it_checks_if_the_segment_is_optional($given, $expected)
+    {
+        $this->assertEquals($expected, Path::isOptionalSegment($given));
+    }
+
+    public function provideWildcardSegments(): array
+    {
+        return [
+            [
+                'given' => '{*var}',
+                'expected' => true,
+            ],
+            [
+                'given' => '{*?var}',
+                'expected' => true,
+            ],
+            [
+                'given' => '{?*var}',
+                'expected' => true,
+            ],
+            [
+                'given' => '{var}',
+                'expected' => false,
+            ],
+            [
+                'given' => '{?var}',
+                'expected' => false,
+            ],
+            [
+                'given' => '/static',
+                'expected' => false,
+            ],
+            [
+                'given' => '/',
+                'expected' => false,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider provideWildcardSegments
+     */
+    public function test_it_checks_if_the_segment_a_wildcard($given, $expected)
+    {
+        $this->assertEquals($expected, Path::isWildcardSegment($given));
     }
 }

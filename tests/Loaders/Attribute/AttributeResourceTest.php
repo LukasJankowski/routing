@@ -52,7 +52,6 @@ class AttributeResourceTest extends TestCase
         );
     }
 
-
     public function test_it_throws_an_exception_on_invalid_class()
     {
         $this->expectException(InvalidArgumentException::class);

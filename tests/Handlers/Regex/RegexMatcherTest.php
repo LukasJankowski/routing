@@ -3,7 +3,6 @@
 namespace Handlers\Regex;
 
 use LukasJankowski\Routing\Collection;
-use LukasJankowski\Routing\Handlers\MatcherInterface;
 use LukasJankowski\Routing\Handlers\Regex\RegexMatcher;
 use LukasJankowski\Routing\Handlers\Regex\RegexParser;
 use LukasJankowski\Routing\Request;
@@ -13,236 +12,269 @@ use RuntimeException;
 
 class RegexMatcherTest extends TestCase
 {
-    public function test_it_can_be_instantiated()
-    {
-        $matcher = new RegexMatcher();
+    private RegexMatcher $matcher;
 
-        $this->assertInstanceOf(MatcherInterface::class, $matcher);
-        $this->assertInstanceOf(RegexMatcher::class, $matcher);
+    private RegexParser $parser;
+
+    protected function setUp(): void
+    {
+        $this->matcher = new RegexMatcher();
+        $this->parser = new RegexParser();
     }
 
-    public function test_it_can_match_routes()
+    public function provideValidRoutes(): array
     {
-        $matcher = new RegexMatcher();
-        $parser = new RegexParser();
-
-        $valid = [
-            '/' => '/',
-            '/path' => '/path',
-            '/{var}' => '/anything',
-            '/nested/{var}' => '/nested/anything',
-            '/{var}/nested' => '/anything/nested',
-            '/{double}/{var}' => '/anything/nested',
-            '/in/{between}/nested' => '/in/anything/nested',
-
-            '/{var:\d+}' => '/123123',
-            '/{var:\d{4}}' => '/1234',
-            '/{var:[a-z]+}' => '/abcdefg',
-            '/nested/{var:\d+}' => '/nested/123789',
-
-            '/{?var}' => '/',
-            '/{?var:\d+}' => '/',
-            '/static/{?var}' => '/static',
-            '/static/{?var:\d+}' => '/static',
-            '/{?var}/static' => '/static',
-            '/{?var}/{?test}' => '/',
-            '/in/{?var}/between' => '/in/between',
-
-            '/{*var}' => '/anything/more/test',
-            '/{*ignored:\d+}' => '/anything/more/test',
-            '/static/{*var}' => '/static/anything/more/test',
-            '/{*early}/static' => '/anything/more/test/static',
-            '/in/{*var}/between' => '/in/anything/more/test/between',
-            '/{*two}/{*wildcards}' => '/anything/more/test/another',
-
-            '/{*?var}' => '/',
-            '/{?*var}' => '/can/be/as/long/as/possible',
-            '/static/{?*var}' => '/static',
-            '/{?*var}/static' => '/static',
-
-            '/combo/{var}/{?opt}/{*wildcard}' => '/combo/anything/with/patterns',
-            '/combo/{?opt}/{*wildcard}/{var}' => '/combo/with/patterns/anything',
-            '/combo/{?opt}/{?*wildcard}/{?var}' => '/combo',
-            '/combo/{?*wc}/static/{var}/{?opt}' => '/combo/static/anything',
+        return [
+            ['given' => '/', 'expected' => '/'],
+            ['given' => '/path', 'expected' => '/path'],
+            ['given' => '/{var}', 'expected' => '/anything'],
+            ['given' => '/nested/{var}', 'expected' => '/nested/anything'],
+            ['given' => '/{var}/nested', 'expected' => '/anything/nested'],
+            ['given' => '/{double}/{var}', 'expected' => '/anything/nested'],
+            ['given' => '/in/{between}/nested', 'expected' => '/in/anything/nested'],
+            ['given' => '/{var:\d+}', 'expected' => '/123123'],
+            ['given' => '/{var:\d{4}}', 'expected' => '/1234'],
+            ['given' => '/{var:[a-z]+}', 'expected' => '/abcdefg'],
+            ['given' => '/nested/{var:\d+}', 'expected' => '/nested/123789'],
+            ['given' => '/{?var}', 'expected' => '/'],
+            ['given' => '/{?var:\d+}', 'expected' => '/'],
+            ['given' => '/static/{?var}', 'expected' => '/static'],
+            ['given' => '/static/{?var:\d+}', 'expected' => '/static'],
+            ['given' => '/{?var}/static', 'expected' => '/static'],
+            ['given' => '/{?var}/{?test}', 'expected' => '/'],
+            ['given' => '/in/{?var}/between', 'expected' => '/in/between'],
+            ['given' => '/{*var}', 'expected' => '/anything/more/test'],
+            ['given' => '/{*ignored:\d+}', 'expected' => '/anything/more/test'],
+            ['given' => '/static/{*var}', 'expected' => '/static/anything/more/test'],
+            ['given' => '/{*early}/static', 'expected' => '/anything/more/test/static'],
+            ['given' => '/in/{*var}/between', 'expected' => '/in/anything/more/test/between'],
+            ['given' => '/{*two}/{*wildcards}', 'expected' => '/anything/more/test/another'],
+            ['given' => '/{*?var}', 'expected' => '/'],
+            ['given' => '/{?*var}', 'expected' => '/can/be/as/long/as/possible'],
+            ['given' => '/static/{?*var}', 'expected' => '/static'],
+            ['given' => '/{?*var}/static', 'expected' => '/static'],
+            ['given' => '/combo/{var}/{?opt}/{*wildcard}', 'expected' => '/combo/anything/with/patterns'],
+            ['given' => '/combo/{?opt}/{*wildcard}/{var}', 'expected' => '/combo/with/patterns/anything'],
+            ['given' => '/combo/{?opt}/{?*wildcard}/{?var}', 'expected' => '/combo'],
+            ['given' => '/combo/{?*wc}/static/{var}/{?opt}', 'expected' => '/combo/static/anything'],
         ];
+    }
 
-        $invalid = [
-            '/' => '/asd',
-            '/path' => '/p4th',
-            '/{var}' => '/too/long',
-            '/nested/{var}' => '/nested',
-            '/{var}/nested' => '/',
-            '/{double}/{var}' => '/anything/nested/too/long',
-            '/in/{between}/nested' => '/in/nested',
+    /**
+     * @dataProvider provideValidRoutes
+     */
+    public function test_it_can_match_valid_routes($given, $expected)
+    {
+        $route = RouteBuilder::get($given)->build();
+        $request = new Request('get', $expected, '', '');
+        $route = $this->parser->parse([$route])[0];
 
-            '/{var:\d+}' => '/abc',
-            '/{var:\d{4}}' => '/12345',
-            '/{var:[a-z]+}' => '/ABCDEF',
-            '/nested/{var:\d+}' => '/nested/abcdef',
+        $this->assertTrue($this->matcher->matches($route, $request));
+    }
 
-            '/{?var}' => '/optional/too/long',
-            '/{?var:\d+}' => '/abc/too/long',
-            '/static/{?var}' => '/static/too/long',
-            '/static/{?var:\d+}' => '/static/abcdef',
-            '/{?var}/static' => '/',
-            '/{?var}/{?test}' => '/too/long/with/segments',
-            '/in/{?var}/between' => '/in',
-
-            '/{*var}' => '/',
-            '/{*ignored:\d+}' => '/',
-            '/static/{*var}' => '/static',
-            '/{*early}/static' => '/wild/card/invalid',
-            '/in/{*var}/between' => '/in/between',
-            '/{*two}/{*wildcards}' => '/anything',
-
-            //'/{*?var}' => '/', //always true
-            //'/{?*var}' => '/', //always true
-            '/static/{?*var}' => '/',
-            '/{?*var}/static' => '/',
-
-            '/combo/{var}/{?opt}/{*wildcard}' => '/combo/with',
-            '/combo/{?opt}/{*wildcard}/{var}' => '/combo/optional',
-            '/combo/{?opt}/{?*wildcard}/{?var}' => '/',
-            '/combo/{?*wc}/static/{var}/{?opt}' => '/combo/static/var/too/long',
+    public function provideInvalidRoutes(): array
+    {
+        return [
+            ['given' => '/', 'expected' => '/asd'],
+            ['given' => '/path', 'expected' => '/p4th'],
+            ['given' => '/{var}', 'expected' => '/too/long'],
+            ['given' => '/nested/{var}', 'expected' => '/nested'],
+            ['given' => '/{var}/nested', 'expected' => '/'],
+            ['given' => '/{double}/{var}', 'expected' => '/anything/nested/too/long'],
+            ['given' => '/in/{between}/nested', 'expected' => '/in/nested'],
+            ['given' => '/{var:\d+}', 'expected' => '/abc'],
+            ['given' => '/{var:\d{4}}', 'expected' => '/12345'],
+            ['given' => '/{var:[a-z]+}', 'expected' => '/ABCDEF'],
+            ['given' => '/nested/{var:\d+}', 'expected' => '/nested/abcdef'],
+            ['given' => '/{?var}', 'expected' => '/optional/too/long'],
+            ['given' => '/{?var:\d+}', 'expected' => '/abc/too/long'],
+            ['given' => '/static/{?var}', 'expected' => '/static/too/long'],
+            ['given' => '/static/{?var:\d+}', 'expected' => '/static/abcdef'],
+            ['given' => '/{?var}/static', 'expected' => '/'],
+            ['given' => '/{?var}/{?test}', 'expected' => '/too/long/with/segments'],
+            ['given' => '/in/{?var}/between', 'expected' => '/in'],
+            ['given' => '/{*var}', 'expected' => '/'],
+            ['given' => '/{*ignored:\d+}', 'expected' => '/'],
+            ['given' => '/static/{*var}', 'expected' => '/static'],
+            ['given' => '/{*early}/static', 'expected' => '/wild/card/invalid'],
+            ['given' => '/in/{*var}/between', 'expected' => '/in/between'],
+            ['given' => '/{*two}/{*wildcards}', 'expected' => '/anything'],
+            ['given' => '/static/{?*var}', 'expected' => '/'],
+            ['given' => '/{?*var}/static', 'expected' => '/'],
+            ['given' => '/combo/{var}/{?opt}/{*wildcard}', 'expected' => '/combo/with'],
+            ['given' => '/combo/{?opt}/{*wildcard}/{var}', 'expected' => '/combo/optional'],
+            ['given' => '/combo/{?opt}/{?*wildcard}/{?var}', 'expected' => '/'],
+            ['given' => '/combo/{?*wc}/static/{var}/{?opt}', 'expected' => '/combo/static/var/too/long'],
         ];
+    }
 
-        foreach ($valid as $routePath => $requestPath) {
-            $route = RouteBuilder::get($routePath)->build();
-            $request = new Request('get', $requestPath, '', '');
-            $route = $parser->parse([$route])[0];
+    /**
+     * @dataProvider provideInvalidRoutes
+     */
+    public function test_it_cant_match_invalid_routes($given, $expected)
+    {
+        $route = RouteBuilder::get($given)->build();
+        $request = new Request('get', $expected, '', '');
+        $route = $this->parser->parse([$route])[0];
 
-            $this->assertTrue($matcher->matches($route, $request));
-        }
-
-        foreach ($invalid as $routePath => $requestPath) {
-            $route = RouteBuilder::get($routePath)->build();
-            $request = new Request('get', $requestPath, '', '');
-            $route = $parser->parse([$route])[0];
-
-            $this->assertFalse($matcher->matches($route, $request));
-        }
+        $this->assertFalse($this->matcher->matches($route, $request));
     }
 
     public function test_it_throws_exception_on_bad_method()
     {
-        $matcher = new RegexMatcher();
-        $parser = new RegexParser();
-
         $route = RouteBuilder::get('/')->build();
         $request = new Request('post', '/', '', '');
-        $route = $parser->parse([$route])[0];
+        $route = $this->parser->parse([$route])[0];
 
         $this->expectExceptionMessage('constraint.method.mismatch');
 
-        $matcher->matches($route, $request);
+        $this->matcher->matches($route, $request);
     }
 
     public function test_it_throws_exception_on_bad_host()
     {
-        $matcher = new RegexMatcher();
-        $parser = new RegexParser();
-
         $route = RouteBuilder::get('/')->host('another.com')->build();
         $request = new Request('get', '/', 'test.com', '');
-        $route = $parser->parse([$route])[0];
+        $route = $this->parser->parse([$route])[0];
 
         $this->expectExceptionMessage('constraint.host.mismatch');
 
-        $matcher->matches($route, $request);
+        $this->matcher->matches($route, $request);
 
     }
 
     public function test_it_throws_exception_on_bad_scheme()
     {
-        $matcher = new RegexMatcher();
-        $parser = new RegexParser();
-
         $route = RouteBuilder::get('/')->scheme('https')->build();
         $request = new Request('get', '/', '', 'http');
         $request->scheme = 'HTTP';
-        $route = $parser->parse([$route])[0];
+        $route = $this->parser->parse([$route])[0];
 
         $this->expectExceptionMessage('constraint.scheme.mismatch');
 
-        $matcher->matches($route, $request);
+        $this->matcher->matches($route, $request);
     }
 
-    public function test_it_can_match_segment_constraints()
+    public function provideValidConstraints(): array
     {
-        $matcher = new RegexMatcher();
-        $parser = new RegexParser();
-
-        $valid = [
-            '/{var}' => ['path' => '/anything', 'expect' => ['var' => 'anything']],
-            '/{var:\d+}' => ['path' => '/123123', 'expect' => ['var' => '123123']],
-            '/{?var}' => ['path' => '/anything', 'expect' => ['var' => 'anything']],
-            '/{?var}/{?test}' => ['path' => '/123', 'expect' => ['var' => '123', 'test' => null]],
-            '/{*var}' => ['path' => '/123/456/abc', 'expect' => ['var' => ['123', '456', 'abc']]],
-            '/{*var}/static' => ['path' => '/123/456/static', 'expect' => ['var' => ['123', '456']]],
-            '/{*var}/{*test}' => ['path' => '/123/456/abc', 'expect' => ['var' => ['123', '456'], 'test' => ['abc']]],
-            '/{*?var}' => ['path' => '/', 'expect' => ['var' => null]],
-            '/combo/{var}/{?opt}/{*wildcard}' => [
-                'path' => '/combo/123/wild',
-                'expect' => ['var' => '123', 'opt' => null, 'wildcard' => ['wild']]
+        return [
+            [
+                'given' => '/{var}',
+                'path' => '/anything',
+                'expected' => ['var' => 'anything']
             ],
-            '/combo/{?*wc}/static/{var}/{?opt}' => [
+            [
+                'given' => '/{var:\d+}',
+                'path' => '/123123',
+                'expected' => ['var' => '123123']
+            ],
+            [
+                'given' => '/{?var}',
+                'path' => '/anything',
+                'expected' => ['var' => 'anything']
+            ],
+            [
+                'given' => '/{?var}/{?test}',
+                'path' => '/123',
+                'expected' => ['var' => '123', 'test' => null]
+            ],
+            [
+                'given' => '/{*var}',
+                'path' => '/123/456/abc',
+                'expected' => ['var' => ['123', '456', 'abc']]
+            ],
+            [
+                'given' => '/{*var}/static',
+                'path' => '/123/456/static',
+                'expected' => ['var' => ['123', '456']]
+            ],
+            [
+                'given' => '/{*var}/{*test}',
+                'path' => '/123/456/abc',
+                'expected' => ['var' => ['123', '456'], 'test' => ['abc']]
+            ],
+            [
+                'given' => '/{*?var}',
+                'path' => '/',
+                'expected' => ['var' => null]
+            ],
+            [
+                'given' => '/combo/{var}/{?opt}/{*wildcard}',
+                'path' => '/combo/123/wild',
+                'expected' => ['var' => '123', 'opt' => null, 'wildcard' => ['wild']]
+            ],
+            [
+                'given' => '/combo/{?*wc}/static/{var}/{?opt}',
                 'path' => '/combo/static/anything',
-                'expect' => ['wc' => null, 'var' => 'anything', 'opt' => null]
+                'expected' => ['wc' => null, 'var' => 'anything', 'opt' => null]
             ]
         ];
+    }
 
-        $defaults = [
-            '/{?var}' => [
+    /**
+     * @dataProvider provideValidConstraints
+     */
+    public function test_it_can_match_segment_constraints($given, $path, $expected)
+    {
+        $route = RouteBuilder::get($given)->build();
+        $request = new Request('get', $path, '', '');
+        $route = $this->parser->parse([$route])[0];
+
+        $this->assertTrue($this->matcher->matches($route, $request));
+        $this->assertEquals($expected, $route->getParameters());
+    }
+
+    public function provideDefaults(): array
+    {
+        return [
+            [
+                'route' => '/{?var}',
                 'path' => '/',
                 'defaults' => ['var' => '123'],
-                'expect' => ['var' => '123']
+                'expected' => ['var' => '123']
             ],
-            '/{?var}/{?test}' => [
+            [
+                'route' => '/{?var}/{?test}',
                 'path' => '/123',
                 'defaults' => ['test' => '456'],
-                'expect' => ['var' => '123', 'test' => '456']
+                'expected' => ['var' => '123', 'test' => '456']
             ],
-            '/{*?var}' => [
+            [
+                'route' => '/{*?var}',
                 'path' => '/',
                 'defaults' => ['var' => ['123', '456']],
-                'expect' => ['var' => ['123', '456']]
+                'expected' => ['var' => ['123', '456']]
             ],
-            '/combo/{var}/{?opt}/{*wildcard}' => [
+            [
+                'route' => '/combo/{var}/{?opt}/{*wildcard}',
                 'path' => '/combo/123/wild',
                 'defaults' => ['opt' => 'optional'],
-                'expect' => ['var' => '123', 'opt' => 'optional', 'wildcard' => ['wild']]
+                'expected' => ['var' => '123', 'opt' => 'optional', 'wildcard' => ['wild']]
             ],
-            '/combo/{?*wc}/static/{var}/{?opt}' => [
+            [
+                'route' => '/combo/{?*wc}/static/{var}/{?opt}',
                 'path' => '/combo/static/anything',
                 'defaults' => ['wc' => ['123', '456'], 'opt' => 'abc'],
-                'expect' => ['wc' => ['123', '456'], 'var' => 'anything', 'opt' => 'abc']
+                'expected' => ['wc' => ['123', '456'], 'var' => 'anything', 'opt' => 'abc']
             ]
         ];
+    }
 
-        foreach ($valid as $routePath => $props) {
-            $route = RouteBuilder::get($routePath)->build();
-            $request = new Request('get', $props['path'], '', '');
-            $route = $parser->parse([$route])[0];
+    /**
+     * @dataProvider provideDefaults
+     */
+    public function test_it_can_set_defaults_on_segments($route, $path, $defaults, $expected)
+    {
+        $route = RouteBuilder::get($route)->default($defaults)->build();
+        $request = new Request('get', $path, '', '');
+        $route = $this->parser->parse([$route])[0];
 
-            $this->assertTrue($matcher->matches($route, $request));
-            $this->assertEquals($props['expect'], $route->getParameters());
-        }
-
-        foreach ($defaults as $routePath => $props) {
-            $route = RouteBuilder::get($routePath)->default($props['defaults'])->build();
-            $request = new Request('get', $props['path'], '', '');
-            $route = $parser->parse([$route])[0];
-
-            $this->assertTrue($matcher->matches($route, $request));
-            $this->assertEquals($props['expect'], $route->getParameters());
-        }
+        $this->assertTrue($this->matcher->matches($route, $request));
+        $this->assertEquals($expected, $route->getParameters());
     }
 
     public function test_it_can_match_a_complex_route()
     {
-        $matcher = new RegexMatcher();
-        $parser = new RegexParser();
-
         $route = RouteBuilder::match(['get', 'post'], '/{?opt}/{var}/{*wc}')
             ->host('api.host.com')
             ->scheme('http')
@@ -257,9 +289,9 @@ class RegexMatcherTest extends TestCase
 
         $request = Request::fromSuperGlobal();
 
-        $route = $parser->parse([$route])[0];
+        $route = $this->parser->parse([$route])[0];
 
-        $this->assertTrue($matcher->matches($route, $request));
+        $this->assertTrue($this->matcher->matches($route, $request));
         $this->assertEquals(
             ['var' => '123456', 'opt' => 'optional', 'wc' => ['wild', 'cards']],
             $route->getParameters()
@@ -272,14 +304,11 @@ class RegexMatcherTest extends TestCase
             ->constraint(Collection::class, 'some-value')
             ->build();
 
-        $matcher = new RegexMatcher();
-        $parser = new RegexParser();
-
         $request = new Request('get', '/', '', '');
-        $route = $parser->parse([$route])[0];
+        $route = $this->parser->parse([$route])[0];
 
         $this->expectException(RuntimeException::class);
 
-        $matcher->matches($route, $request);
+        $this->matcher->matches($route, $request);
     }
 }

@@ -1,5 +1,5 @@
 <?php
 
-use LukasJankowski\Routing\Route;
+use LukasJankowski\Routing\RouteBuilder;
 
-new Route('get', '/');
+RouteBuilder::get('/')->build();

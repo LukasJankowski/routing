@@ -1,8 +1,8 @@
 <?php
 
-use LukasJankowski\Routing\Route;
+use LukasJankowski\Routing\RouteBuilder;
 
 return [
-    new Route('get', '/'),
-    new Route('post', '/another')
+    RouteBuilder::get('/')->build(),
+    RouteBuilder::post('/another')->build(),
 ];
