@@ -2,14 +2,26 @@
 
 namespace Loaders\Yaml;
 
+use Composer\InstalledVersions;
 use ErrorException;
 use InvalidArgumentException;
 use LukasJankowski\Routing\Loaders\Yaml\YamlResource;
 use LukasJankowski\Routing\RouteBuilder;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 class YamlResourceTest extends TestCase
 {
+    public function test_it_throws_an_exception_if_package_not_installed()
+    {
+        if (! InstalledVersions::isInstalled('symfony/yaml')) {
+            $this->expectException(RuntimeException::class);
+            new YamlResource('some-file');
+        } else {
+            $this->markTestSkipped();
+        }
+    }
+
     public function test_it_can_retrieve_the_routes_from_resource()
     {
         $resource = new YamlResource(__DIR__ . '/../../fixtures/routes.yml');

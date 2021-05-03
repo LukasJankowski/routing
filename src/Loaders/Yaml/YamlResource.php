@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace LukasJankowski\Routing\Loaders\Yaml;
 
+use Composer\InstalledVersions;
 use ErrorException;
 use InvalidArgumentException;
 use LukasJankowski\Routing\Loaders\ResourceInterface;
 use LukasJankowski\Routing\Route;
 use LukasJankowski\Routing\RouteBuilder;
+use RuntimeException;
 use Symfony\Component\Yaml\Yaml;
 
 final class YamlResource implements ResourceInterface
@@ -23,6 +25,10 @@ final class YamlResource implements ResourceInterface
      */
     public function __construct(string $file)
     {
+        if (! InstalledVersions::isInstalled('symfony/yaml')) {
+            throw new RuntimeException('Package "symfony/yaml" must be installed.');
+        }
+
         if (! file_exists($file)) {
             throw new InvalidArgumentException(sprintf('The file "%s" could not be found.', $file));
         }

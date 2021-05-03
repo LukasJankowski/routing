@@ -31,55 +31,6 @@ Its sole purpose is to match a request against a defined
 route and return the result or throw an exception on
 failure.
 
-### What it will be
-It will be expanded upon greatly. Some planned features
-include:
-
-- Multitude of route resources
-    - YAML &check;
-    - Database
-    - Fake &check;
-    - Memory &check;
-    - Attributes &check;
-    - Plain PHP Files &check;
-    
-- Multitude of route caches
-    - Redis &check;
-    - Database
-    - Fake &check;
-    - APCu &check;
-    - Memory &check;
-    - Plain PHP Files &check;
-    
-- Multitude of parsers / matchers
-    - Static Parser / Matcher &check;
-    - Fake Parser / Matcher &check;
-    - Regex Parser / Matcher &check;
-    
-- Multitude of constraints
-    - Common Patterns &check;
-    - Fake &check;
-    - Segment Defaults &check;
-    - Methods &check;
-    - Hosts &check;
-    - Schemes &check;
-
-- Named routes &check; / LinkBuilder &check;
-- Route groups (like Laravel) &check;
-    
-- RouteMatch object for matches &check;
-- Mass matching via collection groups &check;
-- Compatible with SymfonyRequests / PSR7 Requests &check;
-- Code Improvements / Restructurings
-    - Better separation of concerns (&check;)
-    - Cleaner classes (&check;)
-    - Utility class reworks
-    - Better unit tests / less duplication
-    
-- Routing Factories &check;
-- Compile Cache &check;
-
-
 ### Versioning
 As of right now the project is still work in progress.
 No version will be issued until a stable release 
