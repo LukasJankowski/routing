@@ -48,4 +48,4 @@ jobs:
           XDEBUG_MODE: coverage
 
       - name: PHPCS Code Style
-        uses: chekalsky/phpcs-action@v1
+        run: vendor/bin/php-cs-fixer fix --config=.php_cs --format=txt
