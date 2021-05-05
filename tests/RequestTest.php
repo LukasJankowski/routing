@@ -3,6 +3,9 @@
 use LukasJankowski\Routing\Request;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @runTestsInSeparateProcesses
+ */
 class RequestTest extends TestCase
 {
     private Request $request;

@@ -12,6 +12,9 @@ class PhpCacheTest extends TestCase
 {
     use PHPMock;
 
+    /**
+     * @runInSeparateProcess
+     */
     public function test_it_throws_an_exception_when_failing_to_write()
     {
         $this->getFunctionMock('LukasJankowski\Routing\Loaders\Php', 'file_put_contents')

@@ -108,6 +108,9 @@ class PathTest extends TestCase
         $this->assertEquals($expected, Path::extractDynamicSegments($given));
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function test_it_returns_an_empty_array_on_failed_match()
     {
         $this->getFunctionMock('LukasJankowski\Routing\Utilities', 'preg_match_all')

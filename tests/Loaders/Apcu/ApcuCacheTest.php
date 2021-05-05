@@ -60,6 +60,9 @@ class ApcuCacheTest extends TestCase
         $cache->set([]);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function test_it_can_read_and_write_routes()
     {
         $routes = [
