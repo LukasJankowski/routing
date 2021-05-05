@@ -3,10 +3,13 @@
 namespace Utilities;
 
 use LukasJankowski\Routing\Utilities\Path;
+use phpmock\phpunit\PHPMock;
 use PHPUnit\Framework\TestCase;
 
 class PathTest extends TestCase
 {
+    use PHPMock;
+
     public function providePaths(): array
     {
         return [
@@ -103,6 +106,19 @@ class PathTest extends TestCase
     public function test_it_extracts_dynamic_segments_from_path($given, $expected)
     {
         $this->assertEquals($expected, Path::extractDynamicSegments($given));
+    }
+
+    public function test_it_returns_an_empty_array_on_failed_match()
+    {
+        $this->getFunctionMock('LukasJankowski\Routing\Utilities', 'preg_match_all')
+            ->expects($this->once())
+            ->willReturnCallback(function ($regex, $path, &$matches) {
+                $matches = [];
+
+                return null;
+            });
+
+        $this->assertEquals([], Path::extractDynamicSegments('/some/path'));
     }
 
     public function provideOptionalSegments(): array

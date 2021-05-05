@@ -38,7 +38,6 @@ final class PhpCache implements CacheInterface
         }
 
         if (false === $routes = unserialize($routes)) {
-            //throw new ErrorException('Failed unserializing routes from PHP file cache.');
             return [];
         }
 

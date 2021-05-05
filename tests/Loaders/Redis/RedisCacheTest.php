@@ -2,24 +2,26 @@
 
 namespace Loaders\Redis;
 
-use Composer\InstalledVersions;
 use LukasJankowski\Routing\Loaders\Redis\RedisCache;
 use LukasJankowski\Routing\RouteBuilder;
+use Mockery;
 use PHPUnit\Framework\TestCase;
-use Predis\Client;
 
 class RedisCacheTest extends TestCase
 {
+    private Mockery\MockInterface $mock;
+
     protected function setUp(): void
     {
-        if (! InstalledVersions::isInstalled('predis/predis')) {
-            $this->markTestSkipped();
-        }
+        $this->mock = Mockery::mock('Predis\Client');
     }
 
     public function test_it_returns_an_empty_array_if_no_cache_exists()
     {
-        $cache = new RedisCache(new Client(), 'not-existent');
+        $this->mock->shouldReceive('get')
+            ->andReturn(null);
+
+        $cache = new RedisCache($this->mock, 'not-existent');
         $this->assertEquals([], $cache->get());
     }
 
@@ -32,7 +34,12 @@ class RedisCacheTest extends TestCase
             RouteBuilder::get('/test2')->constraint('var', 'value')->build(),
         ];
 
-        $cache = new RedisCache(new Client(), 'route-key');
+        $this->mock->shouldReceive('set')
+            ->andReturn(null);
+        $this->mock->shouldReceive('get')
+            ->andReturn(serialize($routes));
+
+        $cache = new RedisCache($this->mock, 'route-key');
         $cache->set($routes);
 
         $this->assertEquals($routes, $cache->get());

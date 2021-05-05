@@ -10,7 +10,7 @@ use LukasJankowski\Routing\Utilities\Scheme;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
-final class Request
+class Request
 {
     public const METHOD_GET = SymfonyRequest::METHOD_GET;
 

@@ -13,7 +13,7 @@ use LukasJankowski\Routing\RouteBuilder;
 use RuntimeException;
 use Symfony\Component\Yaml\Yaml;
 
-final class YamlResource implements ResourceInterface
+class YamlResource implements ResourceInterface
 {
     private string $file;
 
@@ -25,15 +25,23 @@ final class YamlResource implements ResourceInterface
      */
     public function __construct(string $file)
     {
-        if (! InstalledVersions::isInstalled('symfony/yaml')) {
-            throw new RuntimeException('Package "symfony/yaml" must be installed.');
-        }
+        $this->checkPackage();
 
         if (! file_exists($file)) {
             throw new InvalidArgumentException(sprintf('The file "%s" could not be found.', $file));
         }
 
         $this->file = $file;
+    }
+
+    /**
+     * Check if the required package is installed.
+     */
+    private function checkPackage(): void
+    {
+        if (! InstalledVersions::isInstalled('symfony/yaml')) {
+            throw new RuntimeException('Package "symfony/yaml" must be installed.');
+        }
     }
 
     /**
