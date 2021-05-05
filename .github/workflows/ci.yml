@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2
@@ -47,6 +49,11 @@ jobs:
           args: --coverage-text
         env:
           XDEBUG_MODE: coverage
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: applied code-style changes
+          branch: ${{ github.head_ref }}
 
       - name: PHPCS Code Style
         run: vendor/bin/php-cs-fixer fix --dry-run --config=.php_cs --format=checkstyle | cs2pr --graceful-warnings
