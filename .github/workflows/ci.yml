@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [ master ]
+
   pull_request:
     branches: [ master ]
 
@@ -50,10 +51,11 @@ jobs:
         env:
           XDEBUG_MODE: coverage
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - name: PHPCS Code Style
+        run: vendor/bin/php-cs-fixer fix --dry-run --config=.php_cs --format=checkstyle | cs2pr --graceful-warnings
+
+      - name: Code style fixes to commit
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: applied code-style changes
           branch: ${{ github.head_ref }}
-
-      - name: PHPCS Code Style
-        run: vendor/bin/php-cs-fixer fix --dry-run --config=.php_cs --format=checkstyle | cs2pr --graceful-warnings
