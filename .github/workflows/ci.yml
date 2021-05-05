@@ -36,7 +36,9 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
-        run: composer install --no-progress --prefer-dist --optimize-autoloader
+        run: |
+          composer install --no-progress --prefer-dist --optimize-autoloader
+          composer suggests | xargs -i composer require {}
 
       - name: PHPUnit Tests
         uses: php-actions/phpunit@v2
@@ -49,5 +51,5 @@ jobs:
           XDEBUG_MODE: coverage
 
       - name: PHPCS Code Style
-        run: vendor/bin/php-cs-fixer fix --config=.php_cs --format=checkstyle | cs2pr
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff --config=.php_cs --format=checkstyle | cs2pr
         shell: bash
