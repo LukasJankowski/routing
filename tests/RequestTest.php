@@ -3,9 +3,6 @@
 use LukasJankowski\Routing\Request;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @runTestsInSeparateProcesses
- */
 class RequestTest extends TestCase
 {
     private Request $request;
@@ -38,6 +35,9 @@ class RequestTest extends TestCase
         );
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function test_it_can_be_created_with_a_faked_environment()
     {
         $_SERVER['REQUEST_METHOD'] = 'post';

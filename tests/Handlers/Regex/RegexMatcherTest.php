@@ -272,6 +272,9 @@ class RegexMatcherTest extends TestCase
         $this->assertEquals($expected, $route->getParameters());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function test_it_can_match_a_complex_route()
     {
         $route = RouteBuilder::match(['get', 'post'], '/{?opt}/{var}/{*wc}')
