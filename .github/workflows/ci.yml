@@ -54,4 +54,4 @@ jobs:
       - name: Code Style
         uses: docker://oskarstark/php-cs-fixer-ga
         with:
-          args: --dry-run --config=.php_cs
+          args: --dry-run --config=.php-cs-fixer.php
