@@ -75,7 +75,7 @@ class ApcuCacheTest extends TestCase
 
         $this->getFunctionMock(self::NS, 'apcu_fetch')
             ->expects($this->once())
-            ->willReturnCallback(function ($key, &$success) use ($routes) {
+            ->willReturnCallback(function ($key, &$success = null) use ($routes) {
                 $success = true;
 
                 return $routes;
