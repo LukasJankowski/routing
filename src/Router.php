@@ -19,7 +19,7 @@ class Router
     public function resolve(Request $request): ?RouteMatch
     {
         foreach ($this->collections as $collection) {
-            if($route = $collection->match($request)) {
+            if ($route = $collection->match($request)) {
                 return $this->makeMatch($route, $request);
             }
         }
