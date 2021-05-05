@@ -49,5 +49,5 @@ jobs:
           XDEBUG_MODE: coverage
 
       - name: PHPCS Code Style
-        run: vendor/bin/php-cs-fixer fix --dry-run --diff --config=.php_cs --format=checkstyle | cs2pr
+        run: vendor/bin/php-cs-fixer fix --dry-run --config=.php_cs --format=checkstyle | cs2pr
         shell: bash
