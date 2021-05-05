@@ -42,6 +42,6 @@ final class ApcuCache implements CacheInterface
         $success = false;
         $routes = apcu_fetch($this->key, $success);
 
-        return $success ? $routes : [];
+        return $routes === false ? [] : $routes;
     }
 }
