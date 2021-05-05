@@ -36,7 +36,7 @@ jobs:
 
       - name: Install Composer dependencies
         run: |
-          composer install --no-progress --prefer-dist --optimize-autoloader
+          composer install --no-progress --ignore-platform-reqs --prefer-dist --optimize-autoloader
 
       - name: PHPUnit Tests
         uses: php-actions/phpunit@v2
