@@ -12,10 +12,10 @@ $config = new PhpCsFixer\Config();
 return $config->setRules([
         '@PSR2' => true,
         'array_syntax' => ['syntax' => 'short'],
-        'ordered_imports' => ['sortAlgorithm' => 'alpha'],
+        'ordered_imports' => ['sort_algorithm' => 'alpha'],
         'no_unused_imports' => true,
         'not_operator_with_successor_space' => true,
-        'trailing_comma_in_multiline_array' => false,
+        'trailing_comma_in_multiline' => false,
         'phpdoc_scalar' => true,
         'unary_operator_spaces' => true,
         'binary_operator_spaces' => [
@@ -28,7 +28,7 @@ return $config->setRules([
         'phpdoc_single_line_var_spacing' => true,
         'phpdoc_var_without_name' => true,
         'class_attributes_separation' => [
-            'elements' => ['property', 'const'/*, 'method'*/], // disable 'method' -> incompatible with attributes
+            'elements' => ['const' => 'one', 'property' => 'one'],
         ],
         'method_argument_space' => [
             'on_multiline' => 'ensure_fully_multiline',
