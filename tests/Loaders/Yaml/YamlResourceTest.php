@@ -14,6 +14,9 @@ use RuntimeException;
 
 class YamlResourceTest extends TestCase
 {
+    /**
+     * @runInSeparateProcess
+     */
     public function test_it_throws_an_exception_if_package_not_installed()
     {
         $this->expectException(RuntimeException::class);
@@ -110,6 +113,9 @@ class YamlResourceTest extends TestCase
         );
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function test_it_throws_an_exception_if_no_array_is_returned()
     {
         $this->mockInstalledVersions();
