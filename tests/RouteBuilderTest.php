@@ -138,4 +138,45 @@ class RouteBuilderTest extends TestCase
         $this->assertEquals('name1', $route1->getName());
         $this->assertEquals(['middleware1'], $route1->getMiddlewares());
     }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function test_it_can_set_static_collections()
+    {
+        $this->assertFalse(RouteBuilder::usesStaticCollection());
+
+        RouteBuilder::enableStaticCollection();
+
+        $this->assertTrue(RouteBuilder::usesStaticCollection());
+
+        RouteBuilder::disableStaticCollection();
+
+        $this->assertFalse(RouteBuilder::usesStaticCollection());
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function test_it_can_use_static_collections()
+    {
+        RouteBuilder::enableStaticCollection();
+
+        $route = [RouteBuilder::get('/')->build()];
+
+        $this->assertEquals($route, RouteBuilder::fromStaticCollection());
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function test_it_resets_after_every_fetch()
+    {
+        RouteBuilder::enableStaticCollection();
+
+        RouteBuilder::get('/')->build();
+        RouteBuilder::fromStaticCollection();
+
+        $this->assertEquals([], RouteBuilder::fromStaticCollection());
+    }
 }

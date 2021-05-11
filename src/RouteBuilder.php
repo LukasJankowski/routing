@@ -14,6 +14,10 @@ use LukasJankowski\Routing\Utilities\Scheme;
 
 final class RouteBuilder
 {
+    private static bool $staticCollectionEnabled = false;
+
+    private static array $routes = [];
+
     /** @var array<array<string,mixed>> */
     private static array $stack = [];
 
@@ -40,6 +44,43 @@ final class RouteBuilder
         $this->constraint(SegmentConstraint::class, []);
 
         $this->path = Path::normalize($path);
+    }
+
+    /**
+     * Enable static collection.
+     */
+    public static function enableStaticCollection(): void
+    {
+        self::$staticCollectionEnabled = true;
+    }
+
+    /**
+     * Disable static collection.
+     */
+    public static function disableStaticCollection(): void
+    {
+        self::$staticCollectionEnabled = false;
+    }
+
+    /**
+     * Getter.
+     */
+    public static function usesStaticCollection(): bool
+    {
+        return self::$staticCollectionEnabled;
+    }
+
+    /**
+     * Getter.
+     *
+     * @return array<Route>
+     */
+    public static function fromStaticCollection(): array
+    {
+        $routes = self::$routes;
+        self::$routes = [];
+
+        return $routes;
     }
 
     /**
@@ -108,6 +149,11 @@ final class RouteBuilder
         return new self($methods, $path, $action);
     }
 
+    /**
+     * Group common functionality for enclosed routes.
+     *
+     * @param array<string,mixed> $properties
+     */
     public static function group(array $properties, callable $closure): void
     {
         self::$stack[] = $properties;
@@ -124,7 +170,7 @@ final class RouteBuilder
     {
         $this->applyStacks();
 
-        return new Route(
+        $route = new Route(
             $this->path,
             $this->action,
             $this->name,
@@ -132,6 +178,12 @@ final class RouteBuilder
             $this->middlewares,
             $this->defaults
         );
+
+        if (self::$staticCollectionEnabled) {
+            self::$routes[] = $route;
+        }
+
+        return $route;
     }
 
     /**

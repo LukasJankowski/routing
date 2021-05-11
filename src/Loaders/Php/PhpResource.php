@@ -7,6 +7,7 @@ namespace LukasJankowski\Routing\Loaders\Php;
 use ErrorException;
 use InvalidArgumentException;
 use LukasJankowski\Routing\Loaders\ResourceInterface;
+use LukasJankowski\Routing\RouteBuilder;
 
 class PhpResource implements ResourceInterface
 {
@@ -33,9 +34,13 @@ class PhpResource implements ResourceInterface
     {
         $routes = require $this->file;
 
+        if (RouteBuilder::usesStaticCollection()) {
+            return RouteBuilder::fromStaticCollection();
+        }
+
         if (! is_array($routes)) {
             throw new ErrorException(
-                sprintf('The file "%s" must contain an array of routes.', $this->file)
+                sprintf('The file "%s" must contain an array of routes or use static collection.', $this->file)
             );
         }
 
